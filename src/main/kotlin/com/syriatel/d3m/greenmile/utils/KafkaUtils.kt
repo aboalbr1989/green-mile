@@ -3,7 +3,6 @@ package com.syriatel.d3m.greenmile.utils
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.common.serialization.Serde
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.StreamsConfig
 import org.springframework.kafka.support.serializer.JsonSerde
 import java.util.*
 
