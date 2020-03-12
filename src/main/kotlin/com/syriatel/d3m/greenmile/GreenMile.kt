@@ -5,6 +5,11 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.kstream.Materialized
+import org.apache.kafka.streams.kstream.Window
+import org.apache.kafka.streams.kstream.Windowed
+import org.apache.kafka.streams.kstream.Windows
+import org.apache.kafka.streams.state.WindowStore
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -104,6 +109,7 @@ val indexArray: Array<Int> = (0..34).toList().toTypedArray()
  * prepaid_balance91 -> prepaidBalance
  * postpaid_balance92 -> postpaidBalance
  * split_indicator94 -> splitIndicator
+ * usage_service_type96 -> usageServiceType
  * callingcugno99 -> performerCugno
  * calledcugno100 -> receiverCugno
  * callingvpngroupnumber97 -> performerVpn
@@ -148,12 +154,13 @@ val processRec: (Array<String>) -> Action = {
                         "prepaidBalance" to it[indexArray[26]].toLongOrNull(),
                         "postpaidBalance" to it[indexArray[27]].toLongOrNull(),
                         "splitIndicator" to it[indexArray[28]].toIntOrNull(),
-                        "performerCugno" to it[indexArray[29]].toLongOrNull(),
-                        "receiverCugno" to it[indexArray[30]].toLongOrNull(),
-                        "performerVpn" to it[indexArray[31]].toLongOrNull(),
-                        "receiverVpn" to it[indexArray[32]].toLongOrNull(),
-                        "discountedValue1" to it[indexArray[33]].toIntOrNull(),
-                        "discountedValue2" to it[indexArray[34]].toIntOrNull()
+                        "usageServiceType" to it[indexArray[29]].toIntOrNull(),
+                        "performerCugno" to it[indexArray[30]].toLongOrNull(),
+                        "receiverCugno" to it[indexArray[31]].toLongOrNull(),
+                        "performerVpn" to it[indexArray[32]].toLongOrNull(),
+                        "receiverVpn" to it[indexArray[33]].toLongOrNull(),
+                        "discountedValue1" to it[indexArray[34]].toIntOrNull(),
+                        "discountedValue2" to it[indexArray[35]].toIntOrNull()
 
                 )
         )
@@ -190,6 +197,7 @@ val processRec: (Array<String>) -> Action = {
  * prepaid_balance91 -> prepaidBalance
  * postpaid_balance92 -> postpaidBalance
  * split_indicator94 -> splitIndicator
+ * usage_service_type96 -> usageServiceType
  * callingcugno99 -> performerCugno
  * calledcugno100 -> receiverCugno
  * callingvpngroupnumber97 -> performerVpn
@@ -233,12 +241,13 @@ val processSms: (Array<String>) -> Action = {
                         "prepaidBalance" to it[indexArray[26]].toLongOrNull(),
                         "postpaidBalance" to it[indexArray[27]].toLongOrNull(),
                         "splitIndicator" to it[indexArray[28]].toIntOrNull(),
-                        "performerCugno" to it[indexArray[29]].toLongOrNull(),
-                        "receiverCugno" to it[indexArray[30]].toLongOrNull(),
-                        "performerVpn" to it[indexArray[31]].toLongOrNull(),
-                        "receiverVpn" to it[indexArray[32]].toLongOrNull(),
-                        "discountedValue1" to it[indexArray[33]].toIntOrNull(),
-                        "discountedValue2" to it[indexArray[34]].toIntOrNull()
+                        "usageServiceType" to it[indexArray[29]].toIntOrNull(),
+                        "performerCugno" to it[indexArray[30]].toLongOrNull(),
+                        "receiverCugno" to it[indexArray[31]].toLongOrNull(),
+                        "performerVpn" to it[indexArray[32]].toLongOrNull(),
+                        "receiverVpn" to it[indexArray[33]].toLongOrNull(),
+                        "discountedValue1" to it[indexArray[34]].toIntOrNull(),
+                        "discountedValue2" to it[indexArray[35]].toIntOrNull()
 
                 )
         )
@@ -276,6 +285,7 @@ val processSms: (Array<String>) -> Action = {
  * prepaid_balance91 -> prepaidBalance
  * postpaid_balance92 -> postpaidBalance
  * split_indicator94 -> splitIndicator
+ * usage_service_type96 -> usageServiceType
  * callingcugno99 -> performerCugno
  * calledcugno100 -> receiverCugno
  * callingvpngroupnumber97 -> performerVpn
@@ -283,7 +293,6 @@ val processSms: (Array<String>) -> Action = {
  * discount1272 -> discountedValue1
  * discount1474 -> discountedValue2
  */
-
 val processData: (Array<String>) -> Action = {
     Action(
             startedAt = dateValue(it[indexArray[0]]),
@@ -320,15 +329,17 @@ val processData: (Array<String>) -> Action = {
                         "prepaidBalance" to it[indexArray[26]].toLongOrNull(),
                         "postpaidBalance" to it[indexArray[27]].toLongOrNull(),
                         "splitIndicator" to it[indexArray[28]].toIntOrNull(),
-                        "performerCugno" to it[indexArray[29]].toLongOrNull(),
-                        "receiverCugno" to it[indexArray[30]].toLongOrNull(),
-                        "performerVpn" to it[indexArray[31]].toLongOrNull(),
-                        "receiverVpn" to it[indexArray[32]].toLongOrNull(),
-                        "discountedValue1" to it[indexArray[33]].toIntOrNull(),
-                        "discountedValue2" to it[indexArray[34]].toIntOrNull()
+                        "usageServiceType" to it[indexArray[29]].toIntOrNull(),
+                        "performerCugno" to it[indexArray[30]].toLongOrNull(),
+                        "receiverCugno" to it[indexArray[31]].toLongOrNull(),
+                        "performerVpn" to it[indexArray[32]].toLongOrNull(),
+                        "receiverVpn" to it[indexArray[33]].toLongOrNull(),
+                        "discountedValue1" to it[indexArray[34]].toIntOrNull(),
+                        "discountedValue2" to it[indexArray[35]].toIntOrNull()
 
                 )
         )
+
     }
 }
 
