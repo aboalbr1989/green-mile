@@ -5,11 +5,6 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
-import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.kstream.Window
-import org.apache.kafka.streams.kstream.Windowed
-import org.apache.kafka.streams.kstream.Windows
-import org.apache.kafka.streams.state.WindowStore
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -68,7 +63,7 @@ enum class ActionType(val topic: String, val toAction: (Array<String>) -> Action
 
 
 class Action(
-        val startedAt: LocalDateTime = LocalDateTime.now(),
+        val timeStamp: LocalDateTime = LocalDateTime.now(),
         val performedBy: String = "",
         val performerCell: Long? = null,
         val type: ActionType,
@@ -120,7 +115,7 @@ val indexArray: Array<Int> = (0..34).toList().toTypedArray()
 
 val processRec: (Array<String>) -> Action = {
     Action(
-            startedAt = dateValue(it[indexArray[0]]),
+            timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = it[indexArray[2]].toLong(),
             type = ActionType.Call,
@@ -130,6 +125,7 @@ val processRec: (Array<String>) -> Action = {
     ).apply {
         putAll(
                 mapOf(
+                        "startedAt" to dateValue(it[indexArray[0]]),
                         "finishedAt" to dateValue(it[indexArray[5]]),
                         "deductedFrom" to it[indexArray[6]].toIntOrNull(),
                         "actualDuration" to it[indexArray[7]].toIntOrNull(),
@@ -207,7 +203,7 @@ val processRec: (Array<String>) -> Action = {
  */
 val processSms: (Array<String>) -> Action = {
     Action(
-            startedAt = dateValue(it[indexArray[0]]),
+            timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = it[indexArray[2]].toLong(),
             type = ActionType.Call,
@@ -217,6 +213,7 @@ val processSms: (Array<String>) -> Action = {
     ).apply {
         putAll(
                 mapOf(
+                        "startedAt" to dateValue(it[indexArray[0]]),
                         "finishedAt" to dateValue(it[indexArray[5]]),
                         "deductedFrom" to it[indexArray[6]].toIntOrNull(),
                         "actualDuration" to it[indexArray[7]].toIntOrNull(),
@@ -295,7 +292,7 @@ val processSms: (Array<String>) -> Action = {
  */
 val processData: (Array<String>) -> Action = {
     Action(
-            startedAt = dateValue(it[indexArray[0]]),
+            timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = it[indexArray[2]].toLong(),
             type = ActionType.Call,
@@ -305,6 +302,7 @@ val processData: (Array<String>) -> Action = {
     ).apply {
         putAll(
                 mapOf(
+                        "startedAt" to dateValue(it[indexArray[0]]),
                         "finishedAt" to dateValue(it[indexArray[5]]),
                         "deductedFrom" to it[indexArray[6]].toIntOrNull(),
                         "actualDuration" to it[indexArray[7]].toIntOrNull(),
@@ -366,7 +364,7 @@ val processData: (Array<String>) -> Action = {
  */
 val processMon: (Array<String>) -> Action = {
     Action(
-            startedAt = LocalDateTime.parse(it[indexArray[0]], DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+            timeStamp = LocalDateTime.parse(it[indexArray[0]], DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
             performedBy = it[indexArray[1]],
             performerCell = null,
             type = ActionType.ActivateBundle,
@@ -375,6 +373,7 @@ val processMon: (Array<String>) -> Action = {
     ).apply {
         putAll(
                 mapOf(
+                        "startedAt" to dateValue(it[indexArray[0]]),
                         "finishedAt" to dateValue(it[indexArray[4]]),
                         "transactionType" to it[indexArray[5]],
                         "balance" to it[indexArray[6]].toDoubleOrNull(),
