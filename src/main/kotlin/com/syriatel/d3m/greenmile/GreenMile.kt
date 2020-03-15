@@ -62,14 +62,17 @@ enum class ActionType(val topic: String, val toAction: (Array<String>) -> Action
 }
 
 
-class Action(
+data class Action(
         val timeStamp: LocalDateTime = LocalDateTime.now(),
         val performedBy: String = "",
         val performerCell: Long? = null,
         val type: ActionType,
         val offer: Long? = null,
-        val cost: Double? = null
-) : MutableMap<String, Any?> by mutableMapOf()
+        val cost: Double? = null,
+        val map:MutableMap<String,Any?> = mutableMapOf()
+) : MutableMap<String, Any?> by map
+
+
 
 fun dateValue(str: String): LocalDateTime = LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
