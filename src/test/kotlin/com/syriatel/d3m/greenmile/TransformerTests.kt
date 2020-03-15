@@ -130,8 +130,67 @@ class TransformerTests {
 
 
     }
+
+    @Test
+    fun `should find the latest action`(){
+        val actions= listOf(
+                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost=15.0),
+
+                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 15, 10),cost =16.0),
+
+                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 19, 59), cost =17.0),
+
+                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 16, 10) , cost = 19.0),
+
+                Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 19, 10), cost = 31.0),
+
+                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 21, 10), cost = 21.0)
+
+        )
+        fun newCriteria(action:Action):Boolean {
+            return action.type == ActionType.Call
+        }
+        //Max(maxValue,action,criteria,field)
+        var result:LocalDateTime?= null
+        for( a in actions){
+            result= max(result,a,{it.type == ActionType.Call})
+                    { it.timeStamp }
+        }
+        assertEquals(LocalDateTime.of(2020, 1, 1, 21, 10),result)
+/*
+        var result2:Double= null
+
+        for( a in actions){
+            result2= max(result2,a,{it.type == ActionType.Call})
+            { it.cost }
+        }
+        assertEquals(LocalDateTime.of(2020, 1, 1, 21, 10),result2)
+*/
+
+
+    }
 }
 
+/**
+ * =========== Implement Functions Under
+ */
+
+fun <T:Comparable<T>> max(acc:T?,action:Action,criteria:(Action) -> Boolean,field: ((Action) -> T)? ): T? {
+    if(field != null)
+        if(acc == null)
+            return field(action)
+        else
+            if(criteria(action) && field(action) > acc)
+                return field(action)
+
+    return acc
+}
 fun countOf(type: ActionType, it: Int, action: Action): Int {
     return if (action.type == type) it + 1
     else it
