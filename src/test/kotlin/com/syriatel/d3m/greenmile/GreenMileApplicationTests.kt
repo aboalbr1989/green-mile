@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import java.time.LocalDateTime
+import java.time.LocalTime
+
 
 @SpringBootTest
 class GreenMileApplicationTests {
 
-    val actions= listOf(
+    val actions = listOf(
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 12, 1)),
 
@@ -34,20 +36,14 @@ class GreenMileApplicationTests {
     }
 
     @Test
-    fun `should be count of action`(){
+    fun `should be count of action per type`() {
+        var acc = 0
 
-        var acc = 0;
         actions.forEach {
-            acc = countOf(acc, it, ActionType.Call)
-            println(acc)
+            acc = countOf(acc, it){
+                (call or sms) and timeBetween(LocalTime.MIDNIGHT, LocalTime.MIDNIGHT)
+            }
         }
-        assertEquals(3,acc)
+        assertEquals(3, acc)
     }
-
-    fun countOf(acc: Int,action:Action,actionType : ActionType): Int{
-            if(action.type == actionType)
-                    return acc + 1
-            else
-                return acc
-      }
 }
