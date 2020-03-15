@@ -69,6 +69,7 @@ class Action(
         val type: ActionType,
         val offer: Long? = null,
         val cost: Double? = null
+
 ) : MutableMap<String, Any?> by mutableMapOf()
 
 fun dateValue(str: String): LocalDateTime = LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))

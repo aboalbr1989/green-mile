@@ -12,22 +12,28 @@ class GreenMileApplicationTests {
 
     val actions = listOf(
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 12, 1)),
+                    2020, 1, 1, 12, 1),cost = 500.0)
+                    .apply { put("usageServiceType", 10) },
 
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 15, 10)),
+                    2020, 1, 1, 15, 10), cost = 30.5)
+                    .apply { put("usageServiceType", 11) },
 
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 19, 59)),
+                    2020, 1, 1, 19, 59),cost = 55.3)
+                    .apply { put("usageServiceType", 10) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 16, 10)),
+                    2020, 1, 1, 16, 10),cost = 0.1)
+                    .apply { put("usageServiceType", 11) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 19, 10)),
+                    2020, 1, 1, 19, 10), cost = 1.0)
+                    .apply { put("usageServiceType", 11) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 21, 10))
+                    2020, 1, 1, 21, 10), cost = 3.3)
+                    .apply { put("usageServiceType", 10) }
 
     )
 
@@ -36,7 +42,7 @@ class GreenMileApplicationTests {
     }
 
     @Test
-    fun `should be count of action per type`() {
+    fun `should be count actions`() {
         var acc = 0
 
         actions.forEach {
@@ -45,5 +51,17 @@ class GreenMileApplicationTests {
             }
         }
         assertEquals(3, acc)
+    }
+
+    @Test
+    fun `should be sum`(){
+        var costAction = 0.0
+
+        actions.forEach {
+            costAction = sumOf(costAction,it,{cost}){
+                call and onNet
+            }
+            println(costAction)
+        }
     }
 }
