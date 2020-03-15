@@ -124,8 +124,8 @@ class TransformerTests {
 
 
 
-        actions.forEachIndexed { i, v ->
-            assertEquals(results[i], count(if (i > 0) results[i - 1] else 0, v, criteria2))
+        actions.forEachIndexed { i, action ->
+            assertEquals(results[i], count(if (i > 0) results[i - 1] else 0, action, criteria2))
         }
 
 
