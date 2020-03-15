@@ -63,5 +63,6 @@ class GreenMileApplicationTests {
             }
             println(costAction)
         }
+        assertEquals(555.3, costAction)
     }
 }
