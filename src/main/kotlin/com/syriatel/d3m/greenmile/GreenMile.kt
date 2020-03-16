@@ -69,20 +69,20 @@ data class Action(
         val type: ActionType,
         val offer: Long? = null,
         val cost: Double? = null,
-        val map:MutableMap<String,Any?> = mutableMapOf()
+        val map: MutableMap<String, Any?> = mutableMapOf()
 ) : MutableMap<String, Any?> by map
-
 
 
 fun dateValue(str: String): LocalDateTime = LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
 val indexArray: Array<Int> = (0..34).toList().toTypedArray()
+
 /**
  * cust_local_start_date4 -> startedAt
  * callingpartynumber38 -> performedBy
  * callingcellid47 -> performerCell
  * lasteffectoroffering61 -> offer
- * chg_amount35 -> cost
+ * "debit_from_advance_prepaid15" + "debit_from_advance_postpaid" + "debit_from_advance_credit_postpaid17"  -> cost
  * cust_local_end_date5 -> finishedAt
  * pri_identity7 -> deductedFrom
  * actual_usage11 -> actualDuration
@@ -123,7 +123,8 @@ val processRec: (Array<String>) -> Action = {
             performerCell = it[indexArray[2]].toLong(),
             type = ActionType.Call,
             offer = it[indexArray[3]].toLong(),
-            cost = it[indexArray[4]].toDouble()
+            cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
+                    + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
 
     ).apply {
         putAll(
@@ -171,7 +172,7 @@ val processRec: (Array<String>) -> Action = {
  * callingpartynumber38 -> performedBy
  * callingcellid47 -> performerCell
  * lasteffectoroffering61 -> offer
- * chg_amount35 -> cost
+ * "debit_from_advance_prepaid15" + "debit_from_advance_postpaid" + "debit_from_advance_credit_postpaid17"  -> cost
  * cust_local_end_date5 -> finishedAt
  * pri_identity7 -> deductedFrom
  * actual_usage11 -> actualDuration
@@ -211,7 +212,8 @@ val processSms: (Array<String>) -> Action = {
             performerCell = it[indexArray[2]].toLong(),
             type = ActionType.Call,
             offer = it[indexArray[3]].toLong(),
-            cost = it[indexArray[4]].toDouble()
+            cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
+                    + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
 
     ).apply {
         putAll(
@@ -260,7 +262,7 @@ val processSms: (Array<String>) -> Action = {
  * callingpartynumber38 -> performedBy
  * callingcellid47 -> performerCell
  * lasteffectoroffering61 -> offer
- * chg_amount35 -> cost
+ * "debit_from_advance_prepaid15" + "debit_from_advance_postpaid" + "debit_from_advance_credit_postpaid17"  -> cost
  * cust_local_end_date5 -> finishedAt
  * pri_identity7 -> deductedFrom
  * actual_usage11 -> actualDuration
@@ -292,6 +294,8 @@ val processSms: (Array<String>) -> Action = {
  * calledvpngroupnumber98 -> receiverVpn
  * discount1272 -> discountedValue1
  * discount1474 -> discountedValue2
+ * actual_usage13 -> actualByte
+ * rate_usage14 -> systemByte
  */
 val processData: (Array<String>) -> Action = {
     Action(
@@ -300,7 +304,8 @@ val processData: (Array<String>) -> Action = {
             performerCell = it[indexArray[2]].toLong(),
             type = ActionType.Call,
             offer = it[indexArray[3]].toLong(),
-            cost = it[indexArray[4]].toDouble()
+            cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
+                    + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
 
     ).apply {
         putAll(
@@ -336,7 +341,10 @@ val processData: (Array<String>) -> Action = {
                         "performerVpn" to it[indexArray[32]].toLongOrNull(),
                         "receiverVpn" to it[indexArray[33]].toLongOrNull(),
                         "discountedValue1" to it[indexArray[34]].toIntOrNull(),
-                        "discountedValue2" to it[indexArray[35]].toIntOrNull()
+                        "discountedValue2" to it[indexArray[35]].toIntOrNull(),
+                        "actualByte" to it[indexArray[36]].toLongOrNull(),
+                        "systemByte" to it[indexArray[37]].toLongOrNull()
+
 
                 )
         )
@@ -372,7 +380,8 @@ val processMon: (Array<String>) -> Action = {
             performerCell = null,
             type = ActionType.ActivateBundle,
             offer = it[indexArray[2]].toLongOrNull(),
-            cost = it[indexArray[3]].toDoubleOrNull()
+            cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
+                    + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
     ).apply {
         putAll(
                 mapOf(

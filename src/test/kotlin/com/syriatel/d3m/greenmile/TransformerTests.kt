@@ -130,6 +130,32 @@ class TransformerTests {
 
 
     }
+
+    @Test
+    fun `should calculate the average of calls duration`(){
+        val actions = listOf(
+                Action(performedBy = "0933886839", type = ActionType.Call).apply { put("actualDuration", 10) },
+
+                Action(performedBy = "0933886839", type = ActionType.Call).apply { put("actualDuration", 50) },
+
+                Action(performedBy = "0933886839", type = ActionType.Call).apply { put("actualDuration", 60) },
+
+                Action(performedBy = "0933886839", type = ActionType.Msg).apply { put("actualDuration", 50) },
+
+                Action(performedBy = "0933886839", type = ActionType.Call).apply { put("actualDuration", 80) },
+
+                Action(performedBy = "0933886839", type = ActionType.DataSession).apply { put("actualDuration", 20) }
+        )
+        /*
+        //avg(list<action>,criteria,field)
+        var result:Double =0.0
+        for (a  in actions){
+            result=avg(0,)
+        }
+        assertEquals(50,avg())
+        assertEquals()
+        */
+    }
 }
 
 fun countOf(type: ActionType, it: Int, action: Action): Int {
