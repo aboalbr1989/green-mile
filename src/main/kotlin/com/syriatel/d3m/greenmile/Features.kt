@@ -43,7 +43,6 @@ val Action.offNet: Boolean
     get() = when (type) {
         ActionType.Call -> get("usageServiceType") == 11
         ActionType.Msg -> get("usageServiceType") == 22
-        ActionType.DataSession -> get("usageServiceType") == 31
 
         else -> false
     }

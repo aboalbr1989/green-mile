@@ -24,7 +24,6 @@ class GreenMileApplicationTests {
                     .apply { put("usageServiceType", 10) },
 
 
-
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 16, 10), cost = 0.1)
                     .apply { put("usageServiceType", 11) },
@@ -69,14 +68,64 @@ class GreenMileApplicationTests {
     }
 
     @Test
-    fun `roaming test`(){
+    fun `roaming test`() {
+        val actions = listOf(
+                Action(type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 10) },
+                Action(type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 11) },
+                Action(type = ActionType.Call, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 21) },
+
+
+                Action(type = ActionType.Msg, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 21) },
+                Action(type = ActionType.Msg, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 22) },
+                Action(type = ActionType.Msg, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 31) },
+
+
+                Action(type = ActionType.DataSession, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 31) },
+
+                Action(type = ActionType.DataSession, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 33) },
+                Action(type = ActionType.DataSession, timeStamp = LocalDateTime.of(
+                        2020, 1, 1, 12, 1), cost = 500.0)
+                        .apply { put("usageServiceType", 21) }
+
+        )
         var costAction = 0.0
+        var count = 0
 
         actions.forEach {
-            costAction = sumOf(costAction,it,{cost}){
-                call and onNet and timeBetween(LocalTime.MIDNIGHT,LocalTime.of(20,0))
+            costAction = sumOf(costAction, it, { cost }) {
+                call and onNet and timeBetween(LocalTime.MIDNIGHT, LocalTime.of(20, 0))
             }
         }
-        assertEquals(555.3,costAction)
+
+        actions.forEach {
+            costAction = sumOf(costAction, it, { cost }) {
+                sms and onNet and timeBetween(LocalTime.MIDNIGHT, LocalTime.of(20, 0))
+            }
+        }
+
+        actions.forEach {
+            costAction = sumOf(costAction, it, { cost }) {
+                dataSession and onNet and timeBetween(LocalTime.MIDNIGHT, LocalTime.of(20, 0))
+            }
+        }
+        assertEquals(1500.0, costAction)
+
+
     }
 }
