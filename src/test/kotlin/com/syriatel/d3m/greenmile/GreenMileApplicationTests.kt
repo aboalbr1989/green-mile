@@ -23,6 +23,8 @@ class GreenMileApplicationTests {
                     2020, 1, 1, 19, 59), cost = 55.3)
                     .apply { put("usageServiceType", 10) },
 
+
+
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 16, 10), cost = 0.1)
                     .apply { put("usageServiceType", 11) },
@@ -47,7 +49,7 @@ class GreenMileApplicationTests {
 
         actions.forEach {
             acc = countOf(acc, it) {
-                (call or sms) and timeBetween(LocalTime.MIDNIGHT, LocalTime.MIDNIGHT)
+                call
             }
         }
         assertEquals(3, acc)
@@ -64,5 +66,17 @@ class GreenMileApplicationTests {
             println(costAction)
         }
         assertEquals(555.3, costAction)
+    }
+
+    @Test
+    fun `roaming test`(){
+        var costAction = 0.0
+
+        actions.forEach {
+            costAction = sumOf(costAction,it,{cost}){
+                call and onNet and timeBetween(LocalTime.MIDNIGHT,LocalTime.of(20,0))
+            }
+        }
+        assertEquals(555.3,costAction)
     }
 }

@@ -1,5 +1,6 @@
 package com.syriatel.d3m.greenmile
 
+import org.apache.kafka.common.protocol.types.Field
 import java.time.LocalTime
 
 fun countOf(acc: Int, action: Action, criteria: Action.() -> Boolean): Int {
@@ -17,27 +18,68 @@ fun sumOf(acc: Double, action: Action, field: Action.() -> Double?, criteria: Ac
 }
 
 
-infix fun (Action.() -> Boolean).and(fn: (Action.() -> Boolean)): (Action.() -> Boolean) = {
-    this@and(this) && fn(this)
-}
-
-
-infix fun (Action.() -> Boolean).or(fn: (Action.() -> Boolean)): (Action.() -> Boolean) = {
-    this@or(this) || fn(this)
-}
-
 val Action.call: Boolean
     get() = type === ActionType.Call
 
 val Action.sms: Boolean
     get() = type === ActionType.Msg
 
+val Action.dataSession: Boolean
+    get() = type === ActionType.DataSession
 
 fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean =
         timeStamp.toLocalTime().let { it.isAfter(from) && it.isBefore(to) }
 
+
 val Action.onNet: Boolean
-    get() = getOrDefault("usageServiceType", 0) == 10
+    get() = when (type) {
+        ActionType.Call -> get("usageServiceType") == 10
+        ActionType.Msg -> get("usageServiceType") == 21
+        ActionType.DataSession -> get("usageServiceType") == 31
+        else -> false
+    }
 
 val Action.offNet: Boolean
-    get() = getOrDefault("usageServiceType", 0) == 11
+    get() = when (type) {
+        ActionType.Call -> get("usageServiceType") == 11
+        ActionType.Msg -> get("usageServiceType") == 22
+        ActionType.DataSession -> get("usageServiceType") == 31
+
+        else -> false
+    }
+
+val Action.roaming: Boolean
+    get() = when (type) {
+        ActionType.Call -> get("usageServiceType") == 15
+        ActionType.Msg -> get("usageServiceType") == 24
+        ActionType.DataSession -> get("usageServiceType") == 33
+
+        else -> false
+    }
+
+val Action.international: Boolean
+    get() = when (type) {
+        ActionType.Call -> get("usageServiceType") == 13
+
+        else -> false
+    }
+
+val Action.twoG: Boolean
+    get() = get("sessionType") == 2
+
+val Action.threeG: Boolean
+    get() = get("sessionType") == 1
+
+val Action.lte: Boolean
+    get() = get("sessionType") == 6
+
+val Action.sessionType: SessionType
+    get() = when (get("sessionType")) {
+        2 -> SessionType.LTE
+        3 -> SessionType.THREE_G
+        else -> SessionType.TWO_G
+    }
+
+enum class SessionType {
+    THREE_G, TWO_G, LTE
+}

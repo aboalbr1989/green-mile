@@ -263,6 +263,8 @@ val processSms: (Array<String>) -> Action = {
  * pri_identity7 -> deductedFrom
  * actual_usage11 -> actualDuration
  * rate_usage12 -> systemDuration
+ ** actual_usage13 -> actualByte
+ ** rate_usage14 -> systemByte
  * group_code24 -> group
  * object_type32 -> transactionType
  * object_type_id34 -> account
