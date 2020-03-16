@@ -12,7 +12,7 @@ class GreenMileApplicationTests {
 
     val actions = listOf(
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 12, 1),cost = 500.0)
+                    2020, 1, 1, 12, 1), cost = 500.0)
                     .apply { put("usageServiceType", 10) },
 
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
@@ -20,11 +20,11 @@ class GreenMileApplicationTests {
                     .apply { put("usageServiceType", 11) },
 
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 19, 59),cost = 55.3)
+                    2020, 1, 1, 19, 59), cost = 55.3)
                     .apply { put("usageServiceType", 10) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
-                    2020, 1, 1, 16, 10),cost = 0.1)
+                    2020, 1, 1, 16, 10), cost = 0.1)
                     .apply { put("usageServiceType", 11) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
@@ -46,7 +46,7 @@ class GreenMileApplicationTests {
         var acc = 0
 
         actions.forEach {
-            acc = countOf(acc, it){
+            acc = countOf(acc, it) {
                 (call or sms) and timeBetween(LocalTime.MIDNIGHT, LocalTime.MIDNIGHT)
             }
         }
@@ -54,11 +54,11 @@ class GreenMileApplicationTests {
     }
 
     @Test
-    fun `should be sum`(){
+    fun `should be sum`() {
         var costAction = 0.0
 
         actions.forEach {
-            costAction = sumOf(costAction,it,{cost}){
+            costAction = sumOf(costAction, it, { cost }) {
                 call and onNet
             }
             println(costAction)
