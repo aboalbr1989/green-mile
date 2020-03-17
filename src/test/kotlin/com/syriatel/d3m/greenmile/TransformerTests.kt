@@ -10,17 +10,17 @@ class TransformerTests {
     @Test
     fun `should transform rec cdr to action`() {
 
-        val recArray = arrayOf("20200101121000","0933886839","020202020202","030303","not used",
-                "20200101121011","0933886839","46","60","090909090909","transactionType","11111111","1000.0",
-                "13.0","0.0","0.0","1","0993995060","181818","1919191919","2020202020","21212121","222222",
-                "23232323","24242424","25252525","262626","2727272727","2828282828","29292929","3030303030",
-                "31313131","32323232","3333333","34343434","35353535")
+        val recArray = arrayOf("20200101121000", "0933886839", "020202020202", "030303", "not used",
+                "20200101121011", "0933886839", "46", "60", "090909090909", "transactionType", "11111111", "1000.0",
+                "13.0", "0.0", "0.0", "1", "0993995060", "181818", "1919191919", "2020202020", "21212121", "222222",
+                "23232323", "24242424", "25252525", "262626", "2727272727", "2828282828", "29292929", "3030303030",
+                "31313131", "32323232", "3333333", "34343434", "35353535")
 
         val result = processRec(recArray)
 
         assertEquals(result.timeStamp, LocalDateTime.of(2020, 1, 1, 12, 10, 0))
-        assertEquals(result.timeStamp,result.get("startedAt"))
-        assertEquals(result.get("finishedAt"), LocalDateTime.of(2020, 1, 1, 12, 10, 11))
+        assertEquals(result.timeStamp, result["startedAt"])
+        assertEquals(result["finishedAt"], LocalDateTime.of(2020, 1, 1, 12, 10, 11))
 
         assertEquals(result.type, ActionType.Call)
 
@@ -30,17 +30,17 @@ class TransformerTests {
     @Test
     fun `should transform sms cdr to action`() {
 
-        val smsArray = arrayOf("20200101121000","0933886839","020202020202","030303","not used",
-                "20200101121011","0933886839","46","60","090909090909","transactionType","11111111","1000.0",
-                "13.0","0.0","0.0","1","0993995060","181818","1919191919","2020202020","21212121","222222",
-                "23232323","24242424","25252525","262626","2727272727","2828282828","29292929","3030303030",
-                "31313131","32323232","3333333","34343434","35353535")
+        val smsArray = arrayOf("20200101121000", "0933886839", "020202020202", "030303", "not used",
+                "20200101121011", "0933886839", "46", "60", "090909090909", "transactionType", "11111111", "1000.0",
+                "13.0", "0.0", "0.0", "1", "0993995060", "181818", "1919191919", "2020202020", "21212121", "222222",
+                "23232323", "24242424", "25252525", "262626", "2727272727", "2828282828", "29292929", "3030303030",
+                "31313131", "32323232", "3333333", "34343434", "35353535")
 
         val result = processSms(smsArray)
 
         assertEquals(result.timeStamp, LocalDateTime.of(2020, 1, 1, 12, 10, 0))
-        assertEquals(result.timeStamp,result.get("startedAt"))
-        assertEquals(result.get("finishedAt"), LocalDateTime.of(2020, 1, 1, 12, 10, 11))
+        assertEquals(result.timeStamp, result["startedAt"])
+        assertEquals(result["finishedAt"], LocalDateTime.of(2020, 1, 1, 12, 10, 11))
         assertEquals(result.performedBy, "0933886839")
 
         assertEquals(result.type, ActionType.Msg)
@@ -77,12 +77,6 @@ class TransformerTests {
             }
         }
 
-
-        val col: (String) -> (Action.() -> Number) = { name ->
-            {
-                getOrDefault(name, 0) as Number
-            }
-        }
 
         assertEquals(10.0, sumOf(8.0, Action(cost = 2.0, type = ActionType.Call, timeStamp = LocalDateTime.of(
                 2020, 1, 1, 19, 10
@@ -136,17 +130,17 @@ class TransformerTests {
     @Test
     fun `should find the latest action by cost`() {
         val actions = listOf(
-                Action(performedBy = "0933886839", type = ActionType.Call,  cost = null),
+                Action(performedBy = "0933886839", type = ActionType.Call, cost = null),
 
-                Action(performedBy = "0933886839", type = ActionType.Call,  cost = 16.0),
+                Action(performedBy = "0933886839", type = ActionType.Call, cost = 16.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Call,  cost = 17.0),
+                Action(performedBy = "0933886839", type = ActionType.Call, cost = 17.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Call,  cost = 19.0),
+                Action(performedBy = "0933886839", type = ActionType.Call, cost = 19.0),
 
                 Action(performedBy = "0933886839", type = ActionType.Msg, cost = 31.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Call,  cost = null)
+                Action(performedBy = "0933886839", type = ActionType.Call, cost = null)
 
         )
 
@@ -172,7 +166,7 @@ class TransformerTests {
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = null)
 
 
-                )
+        )
 
 
         var result2: Double? = null
@@ -184,6 +178,7 @@ class TransformerTests {
 
 
     }
+
     @Test
     fun `should find the latest action by timestamp`() {
         val actions = listOf(
@@ -208,18 +203,12 @@ class TransformerTests {
         )
 
 
-        fun newCriteria(action:Action):Boolean {
-            return action.type == ActionType.Call
+        var result: LocalDateTime? = null
+        for (a in actions) {
+            result = max(result, a, { it.type == ActionType.Call })
+            { it.timeStamp }
         }
-        //Max(maxValue,action,criteria,field)
-        var result:LocalDateTime?= null
-        for( a in actions){
-            result= max(result,a,{it.type == ActionType.Call})
-                    { it.timeStamp }
-        }
-        assertEquals(LocalDateTime.of(2020, 1, 1, 21, 10),result)
-
-
+        assertEquals(LocalDateTime.of(2020, 1, 1, 21, 10), result)
 
 
     }
@@ -231,10 +220,10 @@ class TransformerTests {
 
 fun <T : Comparable<T>> max(latestMax: T?, action: Action, criteria: (Action) -> Boolean, field: (Action) -> T?): T? {
     if (criteria(action))
-        if (field(action) != null )
+        if (field(action) != null)
             if (latestMax == null)
                 return field(action)
-            else if (field(action)?:0 > latestMax)
+            else if (field(action) ?: 0 > latestMax)
                 return field(action)
 
     return latestMax
