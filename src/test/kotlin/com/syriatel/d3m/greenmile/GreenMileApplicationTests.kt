@@ -12,6 +12,10 @@ import javax.swing.UIManager.put
 class GreenMileApplicationTests {
 
     val actions = listOf(
+            Action(performedBy = "0933886839", type = ActionType.DataSession, timeStamp = LocalDateTime.of(
+                    2020, 1, 1, 12, 1), cost = 500.0)
+                    .apply { put("usageServiceType", 33) },
+
             Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 12, 1), cost = 500.0)
                     .apply { put("usageServiceType", 10) },
@@ -27,15 +31,16 @@ class GreenMileApplicationTests {
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 16, 10), cost = 0.1)
-                    .apply { put("usageServiceType", 11) },
+                    .apply { put("usageServiceType", 21) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 19, 10), cost = 1.0)
-                    .apply { put("usageServiceType", 11) },
+                    .apply { put("usageServiceType", 22) },
 
             Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 21, 10), cost = 3.3)
-                    .apply { put("usageServiceType", 10) }
+                    .apply { put("usageServiceType", 24) }
+
 
     )
 
@@ -286,6 +291,24 @@ class GreenMileApplicationTests {
         }
     }
 
+    @Test
+    fun `test OnNet Actions`() {
+        var acc = 0
+        actions.forEach {
+            acc = countOf(acc, it) { onNet }
+        }
+        assertEquals(3, acc)
+    }
+
+    @Test
+    fun `test OffNet Actions`() {
+        var acc = 0
+
+        actions.forEach {
+            acc = countOf(acc, it) { offNet }
+        }
+        assertEquals(2,acc)
+    }
 
 }
 
