@@ -20,30 +20,7 @@ class TransformerTests {
 
     }
 
-    /*  @Test
-      fun `should calculate total sms`() {
-          val acc = listOf(1, 5, 8, 9)
 
-          //sumOfSmsPerWeek(Action,acc)
-          acc.forEach {
-              assertEquals(it + 1, countOf(ActionType.Msg, it, Action(
-                      type = ActionType.Msg
-              )))
-          }
-          acc.forEach {
-              assertEquals(it, countOf(ActionType.Msg, it, Action(
-                      type = ActionType.Call
-              )))
-          }
-
-          acc.forEach {
-              assertEquals(it, countOf(ActionType.Msg, it, Action(
-                      type = ActionType.ActivateBundle
-              )))
-          }
-
-
-      }*/
 
     @Test
     fun `should calculate total actions`() {
@@ -147,18 +124,7 @@ class TransformerTests {
 
         )
 
-        /*
-        fun newCriteria(action:Action):Boolean {
-            return action.type == ActionType.Call
-        }
-        //Max(maxValue,action,criteria,field)
-        var result:LocalDateTime?= null
-        for( a in actions){
-            result= max(result,a,{it.type == ActionType.Call})
-                    { it.timeStamp }
-        }
-        assertEquals(LocalDateTime.of(2020, 1, 1, 21, 10),result)
-        */
+
         var result2: Double? = null
 
         for (a in actions) {
@@ -182,18 +148,7 @@ class TransformerTests {
 
                 )
 
-        /*
-        fun newCriteria(action:Action):Boolean {
-            return action.type == ActionType.Call
-        }
-        //Max(maxValue,action,criteria,field)
-        var result:LocalDateTime?= null
-        for( a in actions){
-            result= max(result,a,{it.type == ActionType.Call})
-                    { it.timeStamp }
-        }
-        assertEquals(LocalDateTime.of(2020, 1, 1, 21, 10),result)
-        */
+
         var result2: Double? = null
 
         for (a in actions) {
