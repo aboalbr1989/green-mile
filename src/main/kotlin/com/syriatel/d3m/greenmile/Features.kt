@@ -12,7 +12,7 @@ fun countOf(acc: Int, action: Action, criteria: Action.() -> Boolean): Int {
 
 fun sumOf(acc: Double, action: Action, field: Action.() -> Double?, criteria: Action.() -> Boolean): Double {
     return if (criteria(action))
-        acc + action.field()!!
+        acc + (action.field() ?: 0.0)
     else
         return acc
 }
@@ -28,7 +28,23 @@ val Action.dataSession: Boolean
     get() = type === ActionType.DataSession
 
 fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean =
-        timeStamp.toLocalTime().let { it.isAfter(from) && it.isBefore(to) }
+        if (from.isBefore(to))
+            timeStamp.toLocalTime().let {
+                it.isAfter(
+                        from.minusSeconds(1)
+                ) && it.isBefore(
+                        to.plusSeconds(1)
+                )
+            }
+        else {
+            timeStamp.toLocalTime().let {
+                it.isAfter(
+                        from.minusSeconds(1)
+                ) || it.isBefore(
+                        to.plusSeconds(1)
+                )
+            }
+        }
 
 
 val Action.onNet: Boolean

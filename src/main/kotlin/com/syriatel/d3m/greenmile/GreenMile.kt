@@ -335,7 +335,10 @@ val processData: (Array<String>) -> Action = {
                         "performerVpn" to it[indexArray[32]].toLongOrNull(),
                         "receiverVpn" to it[indexArray[33]].toLongOrNull(),
                         "discountedValue1" to it[indexArray[34]].toIntOrNull(),
-                        "discountedValue2" to it[indexArray[35]].toIntOrNull()
+                        "discountedValue2" to it[indexArray[35]].toIntOrNull(),
+                        "actualByte" to it[indexArray[36]].toLongOrNull(),
+                        "systemByte" to it[indexArray[37]].toLongOrNull()
+
 
                 )
         )
