@@ -75,7 +75,7 @@ data class Action(
 
 fun dateValue(str: String): LocalDateTime = LocalDateTime.parse(str, DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 
-val indexArray: Array<Int> = (0..34).toList().toTypedArray()
+val indexArray: Array<Int> = (0..40).toList().toTypedArray()
 
 /**
  * cust_local_start_date4 -> startedAt
