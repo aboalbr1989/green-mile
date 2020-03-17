@@ -27,7 +27,26 @@ class TransformerTests {
 
     }
 
+    @Test
+    fun `should transform sms cdr to action`() {
 
+        val smsArray = arrayOf("20200101121000","0933886839","020202020202","030303","not used",
+                "20200101121011","0933886839","46","60","090909090909","transactionType","11111111","1000.0",
+                "13.0","0.0","0.0","1","0993995060","181818","1919191919","2020202020","21212121","222222",
+                "23232323","24242424","25252525","262626","2727272727","2828282828","29292929","3030303030",
+                "31313131","32323232","3333333","34343434","35353535")
+
+        val result = processSms(smsArray)
+
+        assertEquals(result.timeStamp, LocalDateTime.of(2020, 1, 1, 12, 10, 0))
+        assertEquals(result.timeStamp,result.get("startedAt"))
+        assertEquals(result.get("finishedAt"), LocalDateTime.of(2020, 1, 1, 12, 10, 11))
+        assertEquals(result.performedBy, "0933886839")
+
+        assertEquals(result.type, ActionType.Msg)
+
+
+    }
 
     @Test
     fun `should calculate total actions`() {

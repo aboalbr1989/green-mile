@@ -210,7 +210,7 @@ val processSms: (Array<String>) -> Action = {
             timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = it[indexArray[2]].toLongOrNull(),
-            type = ActionType.Call,
+            type = ActionType.Msg,
             offer = it[indexArray[3]].toLongOrNull(),
             cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
                     + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
@@ -302,7 +302,7 @@ val processData: (Array<String>) -> Action = {
             timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = it[indexArray[2]].toLongOrNull(),
-            type = ActionType.Call,
+            type = ActionType.DataSession,
             offer = it[indexArray[3]].toLongOrNull(),
             cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
                     + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
