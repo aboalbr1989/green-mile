@@ -133,23 +133,17 @@ class TransformerTests {
     @Test
     fun `should find the latest action by cost`() {
         val actions = listOf(
-                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 12, 1), cost = 15.0),
+                Action(performedBy = "0933886839", type = ActionType.Call,  cost = null),
 
-                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 15, 10), cost = 16.0),
+                Action(performedBy = "0933886839", type = ActionType.Call,  cost = 16.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 19, 59), cost = 17.0),
+                Action(performedBy = "0933886839", type = ActionType.Call,  cost = 17.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 16, 10), cost = 19.0),
+                Action(performedBy = "0933886839", type = ActionType.Call,  cost = 19.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 19, 10), cost = 31.0),
+                Action(performedBy = "0933886839", type = ActionType.Msg, cost = 31.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 21, 10), cost = null)
+                Action(performedBy = "0933886839", type = ActionType.Call,  cost = null)
 
         )
 
