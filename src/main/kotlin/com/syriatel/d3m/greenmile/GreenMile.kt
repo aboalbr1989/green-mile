@@ -209,9 +209,9 @@ val processSms: (Array<String>) -> Action = {
     Action(
             timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
-            performerCell = it[indexArray[2]].toLong(),
+            performerCell = it[indexArray[2]].toLongOrNull(),
             type = ActionType.Call,
-            offer = it[indexArray[3]].toLong(),
+            offer = it[indexArray[3]].toLongOrNull(),
             cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
                     + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
 
@@ -301,9 +301,9 @@ val processData: (Array<String>) -> Action = {
     Action(
             timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
-            performerCell = it[indexArray[2]].toLong(),
+            performerCell = it[indexArray[2]].toLongOrNull(),
             type = ActionType.Call,
-            offer = it[indexArray[3]].toLong(),
+            offer = it[indexArray[3]].toLongOrNull(),
             cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
                     + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
 
@@ -375,7 +375,7 @@ val processData: (Array<String>) -> Action = {
  */
 val processMon: (Array<String>) -> Action = {
     Action(
-            timeStamp = LocalDateTime.parse(it[indexArray[0]], DateTimeFormatter.ofPattern("yyyyMMddHHmmss")),
+            timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = null,
             type = ActionType.ActivateBundle,
