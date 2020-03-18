@@ -29,11 +29,6 @@ class RoamingTests {
         assertTrue(action.copy(type = ActionType.DataSession, map = mutableMapOf("usageServiceType" to 33)).roaming)
     }
 
-    @Test
-    fun `roaming should be false when Call with usageService is other`() {
-        assertFalse(action.copy(type = ActionType.Call, map = mutableMapOf("usageServiceType" to 11)).roaming)
-        assertFalse(action.copy(type = ActionType.Call, map = mutableMapOf("usageServiceType" to 10)).roaming)
-    }
 
     @Test
     fun `roaming test`() {

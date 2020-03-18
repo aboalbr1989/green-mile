@@ -164,7 +164,7 @@ class GreenMileApplicationTests {
 
         actions.forEach {
             costAction = sumOf(costAction, it, { cost }) {
-                call and onNet and timeBetween(LocalTime.MIDNIGHT, LocalTime.of(20, 0))
+                call and onNet and timeBetween(LocalTime.of(0,0, 0), LocalTime.of(20, 0))
             }
         }
 
@@ -255,60 +255,6 @@ class GreenMileApplicationTests {
         assertEquals(123456.0 * 1, traffic)
     }
 
-    @Test
-    fun `test time between when start lt end`() {
-        val start = LocalTime.of(1, 0)
-        val end = LocalTime.of(8, 0)
-
-        assertTrue(Action(
-                timeStamp = LocalDate.now().atTime(2, 0),
-                type = ActionType.Msg
-        ).timeBetween(start, end))
-
-        assertFalse(Action(
-                timeStamp = LocalDate.now().atTime(0, 11),
-                type = ActionType.Msg
-        ).timeBetween(start, end))
-    }
-
-    @Test
-    fun `test time between when start gt end`() {
-        val start = LocalTime.of(22, 0)
-        val end = LocalTime.of(1, 0)
-
-        listOf(
-                LocalTime.of(0, 10) to true,
-                LocalTime.of(22, 0) to true,
-                LocalTime.of(21, 59) to false,
-                LocalTime.of(0, 1) to true,
-                LocalTime.of(23, 32) to true,
-                LocalTime.of(12, 5) to true
-
-        ).map {
-            Action(type = ActionType.Msg, timeStamp = LocalDate.now().atTime(it.first)) to it.second
-        }.forEach {
-            assertEquals(it.first.timeBetween(start, end), it.second)
-        }
-    }
-
-    @Test
-    fun `test OnNet Actions`() {
-        var acc = 0
-        actions.forEach {
-            acc = countOf(acc, it) { onNet }
-        }
-        assertEquals(3, acc)
-    }
-
-    @Test
-    fun `test OffNet Actions`() {
-        var acc = 0
-
-        actions.forEach {
-            acc = countOf(acc, it) { offNet }
-        }
-        assertEquals(2,acc)
-    }
 
 }
 
