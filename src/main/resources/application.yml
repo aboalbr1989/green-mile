@@ -5,7 +5,7 @@ spring:
     streams:
       application-id: green-mile
       bootstrap-servers: localhost:9092
-      state-dir: ~/syriatel/green-mile/target
+      state-dir: ./target
       properties:
         default:
           key:
