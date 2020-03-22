@@ -27,25 +27,29 @@ val Action.sms: Boolean
 val Action.dataSession: Boolean
     get() = type === ActionType.DataSession
 
-fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean =
-        if (from.isBefore(to))
-            timeStamp.toLocalTime().let {
-                it.plusNanos(1).isAfter(
-                        from
-                ) && it.minusNanos(1).isBefore(
-                        to
-                )
-            }
-        else {
-            timeStamp.toLocalTime().let {
-                it.plusNanos(1).isAfter(
-                        from
-                ) || it.minusNanos(1).isBefore(
-                        to
-                )
-            }
-        }
 
+fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean {
+    if (timeStamp.toLocalTime().equals(from) || timeStamp.toLocalTime().equals(to))
+        return true
+    else if (from.isBefore(to))
+
+        return timeStamp.toLocalTime().let {
+            it.plusNanos(1).isAfter(
+                    from
+            ) && it.minusNanos(1).isBefore(
+                    to
+            )
+        }
+    else {
+        return timeStamp.toLocalTime().let {
+            it.plusNanos(1).isAfter(
+                    from
+            ) || it.minusNanos(1).isBefore(
+                    to
+            )
+        }
+    }
+}
 
 val Action.onNet: Boolean
     get() = when (type) {

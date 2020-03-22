@@ -11,7 +11,7 @@ class TimeBetween {
     val action = listOf(
 
             Action(type = ActionType.Call,
-                    timeStamp = LocalDate.now().atTime(0,0,1))to true,
+                    timeStamp = LocalDate.now().atTime(0,0))to true,
 
             Action(type = ActionType.Call,
                     timeStamp = LocalDate.now().atTime(2,0))to true,
@@ -33,16 +33,13 @@ class TimeBetween {
 
     @Test
     fun `time between 00 to 20`(){
-            val midNight = LocalTime.of(0,0,0).minusNanos(1)
+            val midNight = LocalTime.of(0,0)
             val endHour = LocalTime.of(20,0)
-
-          //  println(midNight.minusSeconds(1))
-          //  println(endHour.isAfter(midNight.minusSeconds(1)))
 
             action.forEach {
                 assertEquals(it.second,it.first.timeBetween(midNight,endHour))
 
-             //   println(it.second)
+
             }
     }
 
@@ -73,7 +70,7 @@ class TimeBetween {
                 LocalTime.of(21, 59) to false,
                 LocalTime.of(0, 1) to true,
                 LocalTime.of(23, 32) to true,
-                LocalTime.of(12, 5) to true
+                LocalTime.of(12, 5) to false
 
         ).map {
             Action(type = ActionType.Msg, timeStamp = LocalDate.now().atTime(it.first)) to it.second

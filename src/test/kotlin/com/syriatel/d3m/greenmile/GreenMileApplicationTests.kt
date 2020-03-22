@@ -10,7 +10,7 @@ import javax.swing.UIManager.put
 
 
 class GreenMileApplicationTests {
-
+/*
     val actions = listOf(
             Action(performedBy = "0933886839", type = ActionType.DataSession, timeStamp = LocalDateTime.of(
                     2020, 1, 1, 12, 1), cost = 500.0)
@@ -255,7 +255,7 @@ class GreenMileApplicationTests {
         assertEquals(123456.0 * 1, traffic)
     }
 
-
+*/
 }
 
 
