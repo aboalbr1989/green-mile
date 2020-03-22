@@ -1,6 +1,7 @@
 package com.syriatel.d3m.greenmile
 
-import org.apache.kafka.common.protocol.types.Field
+import com.syriatel.d3m.greenmile.domain.Action
+import com.syriatel.d3m.greenmile.domain.ActionType
 import java.time.LocalTime
 
 fun countOf(acc: Int, action: Action, criteria: Action.() -> Boolean): Int {
@@ -44,47 +45,47 @@ fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean {
 
 val Action.onNet: Boolean
     get() = when (type) {
-        ActionType.Call -> get("usageServiceType") == 10
-        ActionType.Msg -> get("usageServiceType") == 21
-        ActionType.DataSession -> get("usageServiceType") == 31
+        ActionType.Call -> map["usageServiceType"] == 10
+        ActionType.Msg -> map["usageServiceType"] == 21
+        ActionType.DataSession -> map["usageServiceType"] == 31
         else -> false
     }
 
 val Action.offNet: Boolean
     get() = when (type) {
-        ActionType.Call -> get("usageServiceType") == 11
-        ActionType.Msg -> get("usageServiceType") == 22
+        ActionType.Call -> map["usageServiceType"] == 11
+        ActionType.Msg -> map["usageServiceType"] == 22
 
         else -> false
     }
 
 val Action.roaming: Boolean
     get() = when (type) {
-        ActionType.Call -> get("usageServiceType") == 15
-        ActionType.Msg -> get("usageServiceType") == 24
-        ActionType.DataSession -> get("usageServiceType") == 33
+        ActionType.Call -> map["usageServiceType"] == 15
+        ActionType.Msg -> map["usageServiceType"] == 24
+        ActionType.DataSession -> map["usageServiceType"] == 33
 
         else -> false
     }
 
 val Action.international: Boolean
     get() = when (type) {
-        ActionType.Call -> get("usageServiceType") == 13
+        ActionType.Call -> map["usageServiceType"] == 13
 
         else -> false
     }
 
 val Action.twoG: Boolean
-    get() = get("sessionType") == 2
+    get() = map["sessionType"] == 2
 
 val Action.threeG: Boolean
-    get() = get("sessionType") == 1
+    get() = map["sessionType"] == 1
 
 val Action.lte: Boolean
-    get() = get("sessionType") == 6
+    get() = map["sessionType"] == 6
 
 val Action.sessionType: SessionType
-    get() = when (get("sessionType")) {
+    get() = when (map["sessionType"]) {
         2 -> SessionType.LTE
         3 -> SessionType.THREE_G
         else -> SessionType.TWO_G

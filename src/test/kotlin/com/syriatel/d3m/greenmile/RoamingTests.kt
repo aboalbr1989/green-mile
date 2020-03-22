@@ -1,5 +1,7 @@
 package com.syriatel.d3m.greenmile
 
+import com.syriatel.d3m.greenmile.domain.Action
+import com.syriatel.d3m.greenmile.domain.ActionType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
