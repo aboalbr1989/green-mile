@@ -29,24 +29,15 @@ val Action.dataSession: Boolean
 
 
 fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean {
-    if (timeStamp.toLocalTime().equals(from) || timeStamp.toLocalTime().equals(to))
+    if(timeStamp.toLocalTime().equals(from) || timeStamp.toLocalTime().equals(to))
         return true
     else if (from.isBefore(to))
-
         return timeStamp.toLocalTime().let {
-            it.plusNanos(1).isAfter(
-                    from
-            ) && it.minusNanos(1).isBefore(
-                    to
-            )
+            it.isAfter(from) && it.isBefore(to)
         }
     else {
         return timeStamp.toLocalTime().let {
-            it.plusNanos(1).isAfter(
-                    from
-            ) || it.minusNanos(1).isBefore(
-                    to
-            )
+            it.isAfter(from) || it.isBefore(to)
         }
     }
 }
