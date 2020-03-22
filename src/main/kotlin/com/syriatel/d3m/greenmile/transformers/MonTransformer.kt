@@ -34,29 +34,28 @@ val processMon: (Array<String>) -> Action = {
             type = ActionType.ActivateBundle,
             offer = it[indexArray[2]],
             cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
-                    + (it[indexArray[15]].toDoubleOrNull() ?: 0.0)
-    ).apply {
-        putAll(
-                mapOf(
-                        "startedAt" to dateValue(it[indexArray[0]]),
-                        "finishedAt" to dateValue(it[indexArray[4]]),
-                        "transactionType" to it[indexArray[5]],
-                        "balance" to it[indexArray[6]].toDoubleOrNull(),
-                        "debitFromPrepaid" to it[indexArray[7]].toDoubleOrNull(),
-                        "debitFromPostpaid" to it[indexArray[8]].toDoubleOrNull(),
-                        "debitFromCredit" to it[indexArray[9]].toDoubleOrNull(),
-                        "bfcOperation" to it[indexArray[10]],
-                        "simType" to it[indexArray[11]],
-                        "payType" to it[indexArray[12]],
-                        "imsi" to it[indexArray[13]],
-                        "offeringID" to it[indexArray[14]],
-                        "createdAt" to it[indexArray[15]],
-                        "cycleBeginTime" to dateValue(it[indexArray[16]]),
-                        "cycleEndTime" to dateValue(it[indexArray[17]]),
-                        "cycleLength" to it[indexArray[18]].toLongOrNull()
-                )
-        )
-    }
+                    + (it[indexArray[15]].toDoubleOrNull() ?: 0.0),
+
+            map = mutableMapOf(
+                    "startedAt" to dateValue(it[indexArray[0]]),
+                    "finishedAt" to dateValue(it[indexArray[4]]),
+                    "transactionType" to it[indexArray[5]],
+                    "balance" to it[indexArray[6]].toDoubleOrNull(),
+                    "debitFromPrepaid" to it[indexArray[7]].toDoubleOrNull(),
+                    "debitFromPostpaid" to it[indexArray[8]].toDoubleOrNull(),
+                    "debitFromCredit" to it[indexArray[9]].toDoubleOrNull(),
+                    "bfcOperation" to it[indexArray[10]],
+                    "simType" to it[indexArray[11]],
+                    "payType" to it[indexArray[12]],
+                    "imsi" to it[indexArray[13]],
+                    "offeringID" to it[indexArray[14]],
+                    "createdAt" to it[indexArray[15]],
+                    "cycleBeginTime" to dateValue(it[indexArray[16]]),
+                    "cycleEndTime" to dateValue(it[indexArray[17]]),
+                    "cycleLength" to it[indexArray[18]].toLongOrNull()
+            )
+    )
+
 }
 
 

@@ -46,22 +46,22 @@ class CountTests {
     fun `calculate sum of field based on criteria2`() {
         val actions = listOf(
                 Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 12, 1)).apply { put("usageServiceType", 10) },
+                        2020, 1, 1, 12, 1), map = mutableMapOf("usageServiceType" to 10)),
 
                 Action(performedBy = "0933886850", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 15, 10)).apply { put("usageServiceType", 10) },
+                        2020, 1, 1, 15, 10), map = mutableMapOf("usageServiceType" to 10)),
 
                 Action(performedBy = "0933886780", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 19, 59)).apply { put("usageServiceType", 10) },
+                        2020, 1, 1, 19, 59), map = mutableMapOf("usageServiceType" to 10)),
 
                 Action(performedBy = "0933887850", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 16, 10)).apply { put("usageServiceType", 47) },
+                        2020, 1, 1, 16, 10), map = mutableMapOf("usageServiceType" to 47)),
 
                 Action(performedBy = "0933789850", type = ActionType.Msg, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 19, 10)).apply { put("usageServiceType", 10) },
+                        2020, 1, 1, 19, 10), map = mutableMapOf("usageServiceType" to 10)),
 
                 Action(performedBy = "0933789850", type = ActionType.Call, timeStamp = LocalDateTime.of(
-                        2020, 1, 1, 21, 10)).apply { put("usageServiceType", 10) }
+                        2020, 1, 1, 21, 10), map = mutableMapOf("usageServiceType" to 10))
         )
         val results = listOf(1, 2, 3, 3, 3, 3)
 
@@ -71,11 +71,8 @@ class CountTests {
             else
                 (this.timeStamp.toLocalTime().let {
                     it.isAfter(LocalTime.MIDNIGHT) && it.isBefore(LocalTime.of(20, 0))
-                }) && type == ActionType.Call && get("usageServiceType") == 10
+                }) && type == ActionType.Call && map["usageServiceType"] == 10
         }
-
-
-
 
         actions.forEachIndexed { i, action ->
             Assertions.assertEquals(results[i], count(if (i > 0) results[i - 1] else 0, action, criteria2))
