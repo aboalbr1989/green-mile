@@ -1,11 +1,18 @@
 package com.syriatel.d3m.greenmile
 
 
+import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
+import com.syriatel.d3m.greenmile.metrics.CustomerStatistics
+import com.syriatel.d3m.greenmile.metrics.Dimension
+import com.syriatel.d3m.greenmile.metrics.Statistics
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.streams.KafkaStreams
+import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.kstream.Transformer
+import org.apache.kafka.streams.kstream.TransformerSupplier
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -33,40 +40,45 @@ class StreamsApp {
             stream<String, String>(it.topic).mapValues { _, v ->
                 it.toAction(v.split(",").toTypedArray())
             }
-
-            @Bean
-            fun kafkaStreams(streamsBuilder: StreamsBuilder, properties: KafkaProperties) =
-                    KafkaStreams(streamsBuilder.build(), Properties().apply {
-                        putAll(properties.buildStreamsProperties())
-                    }).apply {
-                        start()
-                    }
+        }.reduce { s1, s2 ->
+            s1.merge(s2)
         }
     }
+
+    @Bean
+    fun kafkaStreams(streamsBuilder: StreamsBuilder, properties: KafkaProperties) =
+            KafkaStreams(streamsBuilder.build(), Properties().apply {
+                putAll(properties.buildStreamsProperties())
+            }).apply {
+                start()
+            }
 }
 
-//data class NamedDim(
-//        val nameProvider: Action.() -> String,
-//        val criteria: Action.() -> Boolean,
-//        val value: Action.() -> Number
-//)
-//
-//
-//fun Statistics.calculate(dim: NamedDim, action: Action): Statistics =
-//        when (dim.criteria(action)) {
-//            true -> {
-//                val name = dim.nameProvider(action)
-//                val value = dim.value(action)
-//                val count = counts.getOrDefault(name, 0) + 1
-//                val sum = sums.getOrDefault(name, 0.0f) + value.toFloat()
-//                val last = action.timeStamp
-//                val mx = this.max.getOrDefault(name, 0.0f).coerceAtLeast(value.toFloat())
-//                copy(
-//                        counts = counts + (name to count),
-//                        max = max + (name to mx),
-//                        sums = sums + (name to sum),
-//                        last = this.last + (name to last)
-//                )
-//            }
-//            false -> this
-//        }
+
+object StatisticTransformers : TransformerSupplier<String, Action, KeyValue<String, Action>> {
+    override fun get(): Transformer<String, Action, KeyValue<String, Action>> =
+            CustomerStatistics(listOf(
+                    Dimension(
+                            id = {
+                                "calls"
+                            },
+                            criteria = {
+                                call
+                            },
+                            value = {
+                                map["duration"] as Number
+                            }
+                    )
+            , Dimension(
+                    id = {
+                        "sms"
+                    },
+                    criteria =  {
+                        sms
+                    },
+                    value = {
+                        1
+                    }
+            )
+                    ))
+}
