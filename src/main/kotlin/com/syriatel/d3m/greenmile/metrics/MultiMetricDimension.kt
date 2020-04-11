@@ -2,8 +2,8 @@ package com.syriatel.d3m.greenmile.metrics
 
 import com.syriatel.d3m.greenmile.domain.Action
 
-data class Dimension(
-        val id: Action.() -> String,
+data class MultiMetricDimension(
+        val idTemplate: Action.() -> String,
         val criteria: Action.() -> Boolean,
-        val value: Action.() -> Number
+        val metrics: Map<String, Action.() -> Number>
 )

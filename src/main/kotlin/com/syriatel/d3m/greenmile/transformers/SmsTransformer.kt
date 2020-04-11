@@ -50,7 +50,7 @@ val processSms: (Array<String>) -> Action = {
             timeStamp = dateValue(it[indexArray[0]]),
             performedBy = it[indexArray[1]],
             performerCell = it[indexArray[2]],
-            type = ActionType.Msg,
+            type = ActionType.SMS,
             offer = it[indexArray[3]],
             cost = (it[indexArray[13]].toDoubleOrNull() ?: 0.0) + (it[indexArray[14]].toDoubleOrNull() ?: 0.0)
                     + (it[indexArray[15]].toDoubleOrNull() ?: 0.0),

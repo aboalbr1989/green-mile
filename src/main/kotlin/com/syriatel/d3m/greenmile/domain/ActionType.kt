@@ -7,7 +7,12 @@ import com.syriatel.d3m.greenmile.transformers.processSms
 
 enum class ActionType(val topic: String, val toAction: (Array<String>) -> Action) {
     Call("rec", processRec),
-    Msg("sms", processSms),
+    SMS("sms", processSms),
     DataSession("data", processData),
     ActivateBundle("mon", processMon),
+    Recharge("mgr", {
+        Action(
+                type = Recharge
+        )
+    })
 }

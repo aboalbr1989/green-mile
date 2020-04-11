@@ -1,10 +1,9 @@
-package com.syriatel.d3m.greenmile
+package com.syriatel.d3m.greenmile.criteria
 
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 
 class RoamingTests {
@@ -23,7 +22,7 @@ class RoamingTests {
 
     @Test
     fun `roaming should be true when sms and usageService is 24`() {
-        assertTrue(action.copy(type = ActionType.Msg, map = mutableMapOf("usageServiceType" to 24)).roaming)
+        assertTrue(action.copy(type = ActionType.SMS, map = mutableMapOf("usageServiceType" to 24)).roaming)
     }
 
     @Test
@@ -40,12 +39,12 @@ class RoamingTests {
                         map = mutableMapOf("usageServiceType"  to 15)) to true,
                 Action( type = ActionType.DataSession,
                         map = mutableMapOf("usageServiceType"  to 33)) to true,
-                Action( type = ActionType.Msg,
+                Action( type = ActionType.SMS,
                         map = mutableMapOf("usageServiceType"  to 24)) to true,
 
                 Action( type = ActionType.Call,
                         map = mutableMapOf("usageServiceType"  to 10)) to false,
-                Action( type = ActionType.Msg,
+                Action( type = ActionType.SMS,
                         map = mutableMapOf("usageServiceType"  to 21)) to false,
                 Action( type = ActionType.DataSession,
                         map = mutableMapOf("usageServiceType"  to 31)) to false

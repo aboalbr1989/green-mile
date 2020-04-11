@@ -1,4 +1,4 @@
-package com.syriatel.d3m.greenmile
+package com.syriatel.d3m.greenmile.criteria
 
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 class TimeBetween {
@@ -49,12 +48,12 @@ class TimeBetween {
 
         Assertions.assertTrue(Action(
                 timeStamp = LocalDate.now().atTime(2, 0),
-                type = ActionType.Msg
+                type = ActionType.SMS
         ).timeBetween(start, end))
 
         Assertions.assertFalse(Action(
                 timeStamp = LocalDate.now().atTime(0, 11),
-                type = ActionType.Msg
+                type = ActionType.SMS
         ).timeBetween(start, end))
     }
 
@@ -72,9 +71,9 @@ class TimeBetween {
                 LocalTime.of(12, 5) to false
 
         ).map {
-            Action(type = ActionType.Msg, timeStamp = LocalDate.now().atTime(it.first)) to it.second
+            Action(type = ActionType.SMS, timeStamp = LocalDate.now().atTime(it.first)) to it.second
         }.forEach {
-            Assertions.assertEquals(it.first.timeBetween(start, end), it.second)
+            assertEquals(it.first.timeBetween(start, end), it.second)
         }
     }
 

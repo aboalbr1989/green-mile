@@ -1,17 +1,14 @@
 package com.syriatel.d3m.greenmile
 
 
+import com.syriatel.d3m.greenmile.criteria.onNet
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
-import com.syriatel.d3m.greenmile.metrics.CustomerStatistics
-import com.syriatel.d3m.greenmile.metrics.Dimension
-import com.syriatel.d3m.greenmile.metrics.Statistics
-import org.apache.kafka.clients.producer.KafkaProducer
-import org.apache.kafka.clients.producer.ProducerRecord
+import com.syriatel.d3m.greenmile.metrics.*
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsBuilder
-import org.apache.kafka.streams.kstream.Transformer
+import org.apache.kafka.streams.kstream.Predicate
 import org.apache.kafka.streams.kstream.TransformerSupplier
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -35,14 +32,20 @@ fun main(args: Array<String>) {
 class StreamsApp {
 
     @Bean(name = ["greenMileTopology"])
-    fun topology() = StreamsBuilder().apply {
+    fun topology(
+            customerStatistics: CustomerStatistics
+    ) = StreamsBuilder().apply {
         ActionType.values().map {
             stream<String, String>(it.topic).mapValues { _, v ->
                 it.toAction(v.split(",").toTypedArray())
             }
         }.reduce { s1, s2 ->
             s1.merge(s2)
-        }
+        }.transform(
+                TransformerSupplier {
+                    customerStatistics
+                }
+        )
     }
 
     @Bean
@@ -52,33 +55,25 @@ class StreamsApp {
             }).apply {
                 start()
             }
-}
 
 
-object StatisticTransformers : TransformerSupplier<String, Action, KeyValue<String, Action>> {
-    override fun get(): Transformer<String, Action, KeyValue<String, Action>> =
-            CustomerStatistics(listOf(
-                    Dimension(
-                            id = {
-                                "calls"
+    @Bean
+    fun customerMetrics() = CustomerStatistics(
+            multiValue =
+            listOf(
+                    MultiMetricDimension(
+                            idTemplate = {
+                                "onNet$type"
                             },
                             criteria = {
-                                call
+                                onNet
                             },
-                            value = {
-                                map["duration"] as Number
-                            }
+                            metrics = mapOf(
+                                    actionDuration,
+                                    actionCost
+                            )
                     )
-            , Dimension(
-                    id = {
-                        "sms"
-                    },
-                    criteria =  {
-                        sms
-                    },
-                    value = {
-                        1
-                    }
             )
-                    ))
+    )
+
 }
