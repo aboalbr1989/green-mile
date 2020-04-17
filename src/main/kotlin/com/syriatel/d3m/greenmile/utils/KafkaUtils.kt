@@ -10,6 +10,8 @@ import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.Serde
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.serialization.Serializer
+import org.apache.kafka.common.utils.Bytes
+import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.processor.ProcessorContext
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.WindowStore
@@ -65,3 +67,7 @@ inline fun <reified K, reified V> ProcessorContext.stateStore(name: String): Key
 @Suppress("UNCHECKED_CAST")
 inline fun <reified K, reified V> ProcessorContext.windowStore(name: String): WindowStore<K, V> =
         getStateStore(name) as WindowStore<K, V>
+
+
+inline fun <reified K, reified V> materializedAsKeyValueStore(name: String, keyserde: Serde<K>, valueserde: Serde<V>): Materialized<K, V, KeyValueStore<Bytes, ByteArray>> =
+        (Materialized.`as`<K, V, KeyValueStore<Bytes, ByteArray>>(name) as Materialized<K, V, KeyValueStore<Bytes, ByteArray>>).withKeySerde(keyserde).withValueSerde(valueserde)
