@@ -4,11 +4,17 @@ package com.syriatel.d3m.greenmile
 import com.syriatel.d3m.greenmile.criteria.onNet
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
-import com.syriatel.d3m.greenmile.metrics.*
+import com.syriatel.d3m.greenmile.metrics.CustomerStatistics
+import com.syriatel.d3m.greenmile.metrics.MultiMetricDimension
+import com.syriatel.d3m.greenmile.metrics.actionCost
+import com.syriatel.d3m.greenmile.metrics.actionDuration
 import com.syriatel.d3m.greenmile.profiling.CustomerProfile
 import com.syriatel.d3m.greenmile.profiling.customerProfiles
+import com.syriatel.d3m.greenmile.transformers.actionCsvSerde
+import com.syriatel.d3m.greenmile.utils.serdeFor
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.ValueJoiner
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties
@@ -36,13 +42,10 @@ class StreamsApp {
             customerStatistics: CustomerStatistics
     ) = StreamsBuilder().apply {
         val profiles = customerProfiles()
-        val actions = ActionType.values().map {
-            stream<String, String>(it.topic).mapValues { _, v ->
-                it.toAction(v.split(",").toTypedArray())
-            }
-        }.reduce { s1, s2 ->
-            s1.merge(s2)
-        }
+        val actions = stream<String, Action>(
+                ActionType.values().map { it.topic }, Consumed.with(serdeFor(),
+                actionCsvSerde)
+        )
         actions.join(
                 profiles, ValueJoiner { v1: Action, v2: CustomerProfile ->
             v1.copy(map = (v1.map + ("profile" to v2)).toMutableMap())
