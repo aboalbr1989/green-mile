@@ -135,6 +135,16 @@ class CustomerStatisticsStreamsTests {
             assertEquals(13.0, (it["calls"] ?: error("")).sum["cost"])
         })
 
+        assertNotNull(stats.fetch("0933886839", timestampOf("2020-01-01T13:00:00.000"))?.also {
+            assertEquals(1L, it["calls"]?.count)
+            assertEquals(13.0, (it["calls"] ?: error("")).sum["cost"])
+        })
+
+        assertNotNull(stats.fetch("0933886839", timestampOf("2020-01-01T14:00:00.000"))?.also {
+            assertEquals(1L, it["calls"]?.count)
+            assertEquals(13.0, (it["calls"] ?: error("")).sum["cost"])
+        })
+
     }
 
     @AfterEach
