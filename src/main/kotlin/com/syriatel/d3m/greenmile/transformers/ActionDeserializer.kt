@@ -12,7 +12,7 @@ class ActionDeserializer(val delimiter: String = ",") : Deserializer<Action> {
     override fun deserialize(topic: String, value: ByteArray): Action? =
             ActionType.values().findLast {
                 it.topic === topic
-            }?.toAction(value.toString(Charset.defaultCharset()).split(delimiter).toTypedArray())
+            }?.toAction?.invoke(value.toString(Charset.defaultCharset()).split(delimiter).toTypedArray())
 }
 
 val actionCsvSerde: Serde<Action> = object : Serde<Action> {

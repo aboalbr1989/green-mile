@@ -1,4 +1,4 @@
-package com.syriatel.d3m.greenmile.metrics
+package com.syriatel.d3m.greenmile.statistics
 
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
@@ -33,14 +33,3 @@ fun count(acc: Int, action: Action, fn: Action?.() -> Boolean = { this != null }
         sumOf(acc, action, fn, { 1 }).toInt()
 
 
-val actionCost = "cost" to { action: Action ->
-    (action.cost ?: 0.0).toFloat()
-}
-
-val actionDuration = "duration" to { action: Action ->
-    ((action.map["actualDuration"] ?: 0.0) as Number).toFloat()
-}
-
-val dataSize = "dataSize" to { action: Action ->
-    ((action.map["actualByte"] ?: 0.0) as Number).toFloat()
-}

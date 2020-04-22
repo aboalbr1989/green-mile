@@ -21,8 +21,11 @@ fun StreamsBuilder.customerProfiles(): KTable<String, CustomerProfile> =
 data class CustomerProfile(
         var gender: String? = null,
         var birthDate: LocalDate? = null,
-        var lineDate: LocalDate? = null,
-        var tariffProfile: String? = null,
-        var lineType: String? = null
+        var activationDate: LocalDate? = null,
+        var settlementType: String? = null,
+        var subscriberType: String? = null,
+        var imsi: String? = null,
+        var msisdn: String? = null,
+        var placeOfRegistration: String? = null,
+        var aspu: String? = null
 )
-

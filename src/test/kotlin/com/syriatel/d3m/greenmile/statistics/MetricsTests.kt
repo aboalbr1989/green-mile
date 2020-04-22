@@ -1,4 +1,4 @@
-package com.syriatel.d3m.greenmile.metrics
+package com.syriatel.d3m.greenmile.statistics
 
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType

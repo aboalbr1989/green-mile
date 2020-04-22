@@ -49,7 +49,7 @@ class CustomerProfileStreamTests {
                                             CustomerProfile(
                                                     birthDate = LocalDate.parse("1989-05-03"),
                                                     gender = "male",
-                                                    lineDate = LocalDate.parse("2010-03-03")
+                                                    activationDate = LocalDate.parse("2010-03-03")
                                             )
                                     )
                             )
@@ -59,7 +59,7 @@ class CustomerProfileStreamTests {
 
             assertEquals(LocalDate.of(1989, 5, 3), this["988957030"].birthDate)
             assertEquals("male", this["988957030"].gender)
-            assertEquals(LocalDate.of(2010, 3, 3), this["988957030"].lineDate)
+            assertEquals(LocalDate.of(2010, 3, 3), this["988957030"].activationDate)
         }
 
     }
