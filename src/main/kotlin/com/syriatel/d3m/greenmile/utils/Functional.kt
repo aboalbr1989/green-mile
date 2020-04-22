@@ -67,3 +67,30 @@ fun <A, B, C, D, E> Function4<A, B, C, D, E>.tailCurry(d: D): (A, B, C) -> E = {
     invoke(a, b, c, d)
 }
 
+
+/** Map Join **/
+
+fun <K, T1, T2, R> Map<K, T1>.innerJoin(other: Map<K, T2>, joiner: (T1, T2) -> R): Map<K, R> =
+        keys.intersect(other.keys).map {
+            it to joiner(this[it] ?: error(""), other[it] ?: error(""))
+        }.toMap()
+
+fun <K, T1, T2, R> Map<K, T1>.leftJoin(other: Map<K, T2>, joiner: (T1, T2?) -> R): Map<K, R> =
+        keys.map {
+            it to joiner(this[it] ?: error(""), other[it])
+        }.toMap()
+
+fun <K, T1, T2, R> Map<K, T1>.fullJoin(other: Map<K, T2>, joiner: (T1?, T2?) -> R): Map<K, R> =
+        (keys + other.keys).map {
+            it to joiner(this[it], other[it])
+        }.toMap()
+
+fun <K, T1, T2, R> Map<K, T1>.fullJoin(other: Map<K, T2>, def1: T1, def2: T2, joiner: (T1, T2) -> R): Map<K, R> =
+        (keys + other.keys).map {
+            it to joiner(this[it] ?: def1, other[it] ?: def2)
+        }.toMap()
+
+fun <K, T1, R> Map<K, T1>.fullJoin(other: Map<K, T1>, replaceNullWith: T1, joiner: (T1, T1) -> R): Map<K, R> =
+        (keys + other.keys).map {
+            it to joiner(this[it] ?: replaceNullWith, other[it] ?: replaceNullWith)
+        }.toMap()
