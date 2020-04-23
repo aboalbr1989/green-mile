@@ -5,7 +5,7 @@ import com.syriatel.d3m.greenmile.criteria.offNet
 import com.syriatel.d3m.greenmile.criteria.onNet
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
-import com.syriatel.d3m.greenmile.statistics.MetricsHolder
+import com.syriatel.d3m.greenmile.statistics.Dimension
 import com.syriatel.d3m.greenmile.statistics.dimensions
 import com.syriatel.d3m.greenmile.transformers.actionCsvSerde
 import com.syriatel.d3m.greenmile.utils.serdeFor
@@ -38,7 +38,7 @@ class StreamsApp {
 
     @Bean(name = ["greenMileTopology"])
     fun topology(
-            metrics: MetricsHolder
+            metrics: List<Dimension>
     ) = StreamsBuilder().apply {
     }
 
@@ -52,8 +52,8 @@ class StreamsApp {
 
 
     @Bean
-    fun metrics(): MetricsHolder =
-            MetricsHolder(dimensions {
+    fun metrics(): List<Dimension> =
+            dimensions {
                 dimension {
                     name = { type.name }
                     satisfies = { onNet }
@@ -64,7 +64,7 @@ class StreamsApp {
                     satisfies = { offNet }
                     metrics = cost and duration and dataSize
                 }
-            })
+            }
 }
 
 fun StreamsBuilder.actions(): KStream<String, Action> = stream(ActionType.values().map { it.topic }, Consumed.with(

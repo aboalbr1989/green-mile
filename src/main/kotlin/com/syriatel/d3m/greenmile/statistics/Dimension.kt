@@ -27,10 +27,6 @@ infix fun List<Dimension>.of(action: Action) = filter {
     it.idTemplate(action) to it.process(action)
 }.toMap()
 
-data class MetricsHolder(
-        val metrics: List<Dimension>
-)
-
 class DimensionBuilder {
     val cost = "cost" to { action: Action ->
         (action.cost ?: 0.0).toFloat()
