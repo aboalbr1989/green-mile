@@ -7,6 +7,7 @@ import com.syriatel.d3m.greenmile.utils.serdeFor
 import org.apache.kafka.streams.kstream.KTable
 import org.apache.kafka.streams.kstream.TimeWindowedKStream
 import org.apache.kafka.streams.kstream.Windowed
+import java.time.Duration
 import java.time.LocalDateTime
 
 class Statistics(map: Map<String, DimensionStatistics> = mapOf()) : Map<String, DimensionStatistics> by map {
@@ -40,7 +41,12 @@ fun TimeWindowedKStream<String, Action>.statistics(dimensions: List<Dimension>, 
         { _, action, statistics ->
             statistics.accumulate(dimensions of action)
         },
-        materializedAsWindowStore(storeName, serdeFor(), serdeFor())
+        materializedAsWindowStore<String, Statistics>(storeName)
+                .withValueSerde(serdeFor())
+                .withValueSerde(serdeFor())
+                .withRetention(Duration.ofDays(30)
+                )
+
 )
 
 fun TimeWindowedKStream<String, Action>.statistics(dimensions: List<Dimension>): KTable<Windowed<String>, Statistics> = aggregate(

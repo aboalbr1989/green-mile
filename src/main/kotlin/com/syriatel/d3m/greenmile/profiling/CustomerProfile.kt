@@ -5,6 +5,7 @@ import com.syriatel.d3m.greenmile.utils.serdeFor
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.KTable
+import java.time.Duration
 import java.time.LocalDate
 
 
@@ -12,10 +13,11 @@ fun StreamsBuilder.customerProfiles(): KTable<String, CustomerProfile> =
         table("customer-profiles", Consumed.with(
                 serdeFor(),
                 serdeFor()
-        ), materializedAsKeyValueStore("customer-profiles-store",
-                serdeFor(),
-                serdeFor()
-        ))
+        ), materializedAsKeyValueStore<String, CustomerProfile>("customer-profiles-store")
+                .withKeySerde(serdeFor())
+                .withValueSerde(serdeFor())
+                .withRetention(Duration.ofDays(30))
+        )
 
 
 data class CustomerProfile(

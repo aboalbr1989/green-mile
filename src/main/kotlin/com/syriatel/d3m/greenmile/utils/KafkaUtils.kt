@@ -69,9 +69,9 @@ inline fun <reified K, reified V> ProcessorContext.windowStore(name: String): Wi
         getStateStore(name) as WindowStore<K, V>
 
 
-inline fun <reified K, reified V> materializedAsKeyValueStore(name: String, keyserde: Serde<K>, valueserde: Serde<V>): Materialized<K, V, KeyValueStore<Bytes, ByteArray>> =
-        Materialized.`as`<K, V, KeyValueStore<Bytes, ByteArray>>(name).withKeySerde(keyserde).withValueSerde(valueserde)
+inline fun <reified K, reified V> materializedAsKeyValueStore(name: String): Materialized<K, V, KeyValueStore<Bytes, ByteArray>> =
+        Materialized.`as`<K, V, KeyValueStore<Bytes, ByteArray>>(name)
 
 
-inline fun <reified K, reified V> materializedAsWindowStore(name: String, keyserde: Serde<K>, valueserde: Serde<V>): Materialized<K, V, WindowStore<Bytes, ByteArray>> =
-        Materialized.`as`<K, V, WindowStore<Bytes, ByteArray>>(name).withKeySerde(keyserde).withValueSerde(valueserde)
+inline fun <reified K, reified V> materializedAsWindowStore(name: String): Materialized<K, V, WindowStore<Bytes, ByteArray>> =
+        Materialized.`as`<K, V, WindowStore<Bytes, ByteArray>>(name)
