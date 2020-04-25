@@ -44,7 +44,7 @@ class DimensionBuilder {
     infix fun Array<Pair<String, Action.() -> Number>>.and(second: Pair<String, Action.() -> Number>) = this + second
 
     var name: Action.() -> String = { "" }
-    var satisfies: Action.() -> Boolean = { true }
+    var criteria: Action.() -> Boolean = { true }
     var metrics: Array<Pair<String, Action.() -> Number>> = arrayOf(cost, duration, dataSize)
 
 }
@@ -57,7 +57,7 @@ class DimensionsBuilder {
         dimensions.add(
                 Dimension(
                         b1.name,
-                        b1.satisfies,
+                        b1.criteria,
                         mapOf(*b1.metrics)
                 )
         )

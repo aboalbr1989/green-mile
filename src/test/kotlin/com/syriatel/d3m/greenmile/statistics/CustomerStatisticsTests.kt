@@ -4,27 +4,26 @@ import com.syriatel.d3m.greenmile.actions
 import com.syriatel.d3m.greenmile.criteria.call
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
+import com.syriatel.d3m.greenmile.utils.`for`
+import com.syriatel.d3m.greenmile.utils.daily
+import com.syriatel.d3m.greenmile.utils.dailyWindow
 import com.syriatel.d3m.greenmile.utils.serdeFor
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.kstream.TimeWindows
-import org.apache.kafka.streams.state.WindowStore
+import org.apache.kafka.streams.kstream.Windowed
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.assertj.core.api.Assertions.assertThat
-import org.hibernate.validator.internal.util.Contracts.assertNotNull
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import java.time.Duration
-import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
-import kotlin.streams.toList
-
 
 class CustomerStatisticsTests {
 
@@ -39,7 +38,7 @@ class CustomerStatisticsTests {
             val met = dimensions {
                 dimension {
                     name = { "calls" }
-                    satisfies = { call }
+                    criteria = { call }
                     metrics = arrayOf("cost" to costFunction)
                 }
             }
@@ -91,28 +90,43 @@ class CustomerStatisticsTests {
 
 class CustomerStatisticsStreamsTests {
     val factory = ConsumerRecordFactory(
-            serdeFor<String>().serializer(), serdeFor<String>().serializer()
+            serdeFor<String>().serializer(), serdeFor<Action>().serializer()
     )
 
     lateinit var testDriver: TopologyTestDriver
-    lateinit var stats: WindowStore<String, Map<String, DimensionStatistics>>
-    lateinit var storeName: String
+
+
+    private fun createCall(timestamp: String) =
+            Action(
+                    timeStamp = LocalDateTime.parse(timestamp),
+                    type = ActionType.Call
+            )
+
+    private fun createCall(timestamp: LocalDateTime) =
+            Action(
+                    timeStamp = timestamp,
+                    type = ActionType.Call
+            )
 
     @BeforeEach
     fun setup() {
         val dimensions = dimensions {
             dimension {
                 name = { "calls" }
-                satisfies = { call }
+                criteria = { call }
                 metrics = arrayOf(cost)
             }
         }
 
         testDriver = TopologyTestDriver(
                 StreamsBuilder().apply {
-                    storeName = actions().groupByKey().windowedBy(
+                    actions(serdeFor()).groupByKey().windowedBy(
                             TimeWindows.of(Duration.ofHours(1))
-                    ).statistics(dimensions, "hourly-statistics").queryableStoreName()
+                    ).statistics(dimensions, "hourly-statistics")
+                            .rollup("daily-statistics") {
+                                it.daily
+                            }
+
                 }.build(),
                 Properties().apply {
                     this[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = "dummy:9092"
@@ -123,42 +137,45 @@ class CustomerStatisticsStreamsTests {
     }
 
     @Test
-    fun test() {
-        stats = testDriver.getWindowStore(storeName)
-        javaClass.classLoader.getResourceAsStream("cdrs/rec_sample.csv")?.use { inputStream ->
-            testDriver.pipeInput(inputStream.bufferedReader().lines().map {
-                factory.create("rec", it.split(",")[1], it)
-            }.toList())
+    fun `should calculate hourly statistics`() {
+        val hourlyStatistics = testDriver.getWindowStore<String, Statistics>("hourly-statistics")
+
+        testDriver.pipeInput(
+                listOf(12, 13, 14).map {
+                    factory.create("rec", "0933886839", createCall("2020-01-01T$it:10:00.000").copy(cost = 13.0))
+                }
+        )
+
+        val sequence = hourlyStatistics.all().asSequence()
+
+        assertThat(sequence.toList()).allMatch {
+            (it.value["calls"]?.count == 1L) and (it.value["calls"]?.sum?.get("cost") == 13.0)
         }
-        assertNotNull(stats.fetch("0933886839", timestampOf("2020-01-01T12:00:00.000"))?.also {
-            assertEquals(1L, it["calls"]?.count)
-            assertEquals(13.0, (it["calls"] ?: error("")).sum["cost"])
-        })
 
-        assertNotNull(stats.fetch("0933886839", timestampOf("2020-01-01T13:00:00.000"))?.also {
-            assertEquals(1L, it["calls"]?.count)
-            assertEquals(13.0, (it["calls"] ?: error("")).sum["cost"])
-        })
+    }
 
-        assertNotNull(stats.fetch("0933886839", timestampOf("2020-01-01T14:00:00.000"))?.also {
-            assertEquals(1L, it["calls"]?.count)
-            assertEquals(13.0, (it["calls"] ?: error("")).sum["cost"])
-        })
 
+    @Test
+    fun `should calculate daily statistics`() {
+        val daily = testDriver.getKeyValueStore<Windowed<String>, Statistics>("daily-statistics")
+        testDriver.pipeInput(listOf(5, 4, 3, 2, 1).flatMap { d ->
+            listOf(1, 3, 4, 5, 6, 7, 3).map { h ->
+                factory.create("rec", "988957030",
+                        createCall(LocalDateTime.of(
+                                2020, 1, d, h, 0, 0
+                        ))
+                )
+            }
+        })
+        daily.all().forEach {
+            assertEquals(7L, it.value["calls"]?.count)
+        }
+
+        daily[LocalDate.of(2020, 1, 5).dailyWindow `for` "988957030"]
     }
 
     @AfterEach
     fun tearDown() {
         testDriver.close()
     }
-
-
 }
-
-fun timestampOf(date: String) =
-        LocalDateTime.parse(date).timestamp()
-
-
-fun LocalDateTime.timestamp() = atZone(ZoneId.systemDefault()).toEpochSecond() * 1000
-
-fun Long.dateTime() = Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDateTime()
