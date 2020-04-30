@@ -6,9 +6,8 @@ import com.syriatel.d3m.greenmile.utils.serdeFor
 import org.apache.kafka.streams.StreamsBuilder
 
 import org.apache.kafka.streams.StreamsConfig
+import org.apache.kafka.streams.TestInputTopic
 import org.apache.kafka.streams.TopologyTestDriver
-import org.apache.kafka.streams.test.ConsumerRecordFactory
-
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -19,7 +18,9 @@ import java.util.*
 class HandsetsStreamsTests {
 
     lateinit var testDriver: TopologyTestDriver
-    val handsetFactory = ConsumerRecordFactory("handsets", serdeFor<String>().serializer(), serdeFor<HandSet>().serializer())
+
+
+    lateinit var input: TestInputTopic<String, HandSet>
 
     @BeforeEach
     fun setup() {
@@ -32,6 +33,8 @@ class HandsetsStreamsTests {
                     this[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = "dummy:9092"
                 }
         )
+
+        input = testDriver.createInputTopic("handsets", serdeFor<String>().serializer(), serdeFor<HandSet>().serializer())
     }
 
     @AfterEach
@@ -53,19 +56,13 @@ class HandsetsStreamsTests {
                 os = "Android 8.2"
         )
 
-        testDriver.pipeInput(
-                listOf(
-                        handsetFactory.create("handsets", handSet.imei, handSet)
-                )
-        )
+        input.pipeInput(handSet.imei, handSet)
+
+
 
         Assertions.assertEquals(handSet, testDriver.getKeyValueStore<String, HandSet>("handsets")[handSet.imei])
 
-        testDriver.pipeInput(
-                listOf(
-                        handsetFactory.create("handsets", handSet.imei, handSet.copy(dualSim = false))
-                )
-        )
+        input.pipeInput(handSet.imei, handSet.copy(dualSim = false))
 
         Assertions.assertEquals(handSet.copy(dualSim = false), testDriver.getKeyValueStore<String, HandSet>("handsets")[handSet.imei])
 

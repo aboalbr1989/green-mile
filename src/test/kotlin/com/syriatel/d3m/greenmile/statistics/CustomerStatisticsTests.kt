@@ -10,10 +10,10 @@ import com.syriatel.d3m.greenmile.utils.dailyWindow
 import com.syriatel.d3m.greenmile.utils.serdeFor
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
+import org.apache.kafka.streams.TestInputTopic
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.kstream.TimeWindows
 import org.apache.kafka.streams.kstream.Windowed
-import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -89,10 +89,7 @@ class CustomerStatisticsTests {
 }
 
 class CustomerStatisticsStreamsTests {
-    val factory = ConsumerRecordFactory(
-            serdeFor<String>().serializer(), serdeFor<Action>().serializer()
-    )
-
+    lateinit var input: TestInputTopic<String, Action>
     lateinit var testDriver: TopologyTestDriver
 
 
@@ -134,17 +131,20 @@ class CustomerStatisticsStreamsTests {
                 }
 
         )
+
+        input = testDriver.createInputTopic("rec", serdeFor<String>().serializer(), serdeFor<Action>().serializer())
     }
 
     @Test
     fun `should calculate hourly statistics`() {
         val hourlyStatistics = testDriver.getWindowStore<String, Statistics>("hourly-statistics")
 
-        testDriver.pipeInput(
-                listOf(12, 13, 14).map {
-                    factory.create("rec", "0933886839", createCall("2020-01-01T$it:10:00.000").copy(cost = 13.0))
-                }
-        )
+        listOf(12, 13, 14).map {
+            "0933886839" to createCall("2020-01-01T$it:10:00.000").copy(cost = 13.0)
+        }.forEach {
+            input.pipeInput(it.first, it.second)
+        }
+
 
         val sequence = hourlyStatistics.all().asSequence()
 
@@ -158,15 +158,18 @@ class CustomerStatisticsStreamsTests {
     @Test
     fun `should calculate daily statistics`() {
         val daily = testDriver.getKeyValueStore<Windowed<String>, Statistics>("daily-statistics")
-        testDriver.pipeInput(listOf(5, 4, 3, 2, 1).flatMap { d ->
+        listOf(5, 4, 3, 2, 1).flatMap { d ->
             listOf(1, 3, 4, 5, 6, 7, 3).map { h ->
-                factory.create("rec", "988957030",
+                "988957030" to
                         createCall(LocalDateTime.of(
                                 2020, 1, d, h, 0, 0
                         ))
-                )
+
             }
-        })
+        }.forEach {
+            input.pipeInput(it.first, it.second)
+        }
+
         daily.all().forEach {
             assertEquals(7L, it.value["calls"]?.count)
         }
