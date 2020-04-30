@@ -1,4 +1,4 @@
-package com.syriatel.d3m.greenmile.metrics
+package com.syriatel.d3m.greenmile.statistics
 
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
@@ -57,7 +57,7 @@ class CountTests {
                 Action(performedBy = "0933887850", type = ActionType.Call, timeStamp = LocalDateTime.of(
                         2020, 1, 1, 16, 10), map = mutableMapOf("usageServiceType" to 47)),
 
-                Action(performedBy = "0933789850", type = ActionType.Msg, timeStamp = LocalDateTime.of(
+                Action(performedBy = "0933789850", type = ActionType.SMS, timeStamp = LocalDateTime.of(
                         2020, 1, 1, 19, 10), map = mutableMapOf("usageServiceType" to 10)),
 
                 Action(performedBy = "0933789850", type = ActionType.Call, timeStamp = LocalDateTime.of(
@@ -92,7 +92,7 @@ class CountTests {
 
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = 19.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Msg, cost = 31.0),
+                Action(performedBy = "0933886839", type = ActionType.SMS, cost = 31.0),
 
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = null)
 
@@ -115,7 +115,7 @@ class CountTests {
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = null),
 
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = null),
-                Action(performedBy = "0933886839", type = ActionType.Msg, cost = null),
+                Action(performedBy = "0933886839", type = ActionType.SMS, cost = null),
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = null),
                 Action(performedBy = "0933886839", type = ActionType.Call, cost = null)
 
@@ -148,7 +148,7 @@ class CountTests {
                 Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(
                         2020, 1, 1, 16, 10), cost = 19.0),
 
-                Action(performedBy = "0933886839", type = ActionType.Msg, timeStamp = LocalDateTime.of(
+                Action(performedBy = "0933886839", type = ActionType.SMS, timeStamp = LocalDateTime.of(
                         2020, 1, 1, 19, 10), cost = 31.0),
 
                 Action(performedBy = "0933886839", type = ActionType.Call, timeStamp = LocalDateTime.of(

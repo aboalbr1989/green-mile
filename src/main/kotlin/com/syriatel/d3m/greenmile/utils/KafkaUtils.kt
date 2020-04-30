@@ -1,10 +1,8 @@
 package com.syriatel.d3m.greenmile.utils
 
-import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
@@ -12,8 +10,12 @@ import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.Serde
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.serialization.Serializer
+import org.apache.kafka.common.utils.Bytes
+import org.apache.kafka.streams.kstream.Materialized
+import org.apache.kafka.streams.processor.ProcessorContext
+import org.apache.kafka.streams.state.KeyValueStore
+import org.apache.kafka.streams.state.WindowStore
 import java.util.*
-import kotlin.reflect.KClass
 
 val map = mapOf(
         Long::class to Serdes.LongSerde(),
@@ -35,13 +37,13 @@ fun <K, V> KafkaProducer<K, V>.produceMessage(topic: String, key: K? = null, val
     send(ProducerRecord(topic, key, value))
 }
 
-val objectMapper = ObjectMapper().registerKotlinModule()
+val objectMapper: ObjectMapper = ObjectMapper().registerKotlinModule()
         .registerModules(
                 Jdk8Module(),
                 JavaTimeModule()
         )
 
-class JsonSerde<T>(val clazz: Class<T>) : Serde<T> {
+class JsonSerde<T>(private val clazz: Class<T>) : Serde<T> {
     override fun deserializer(): Deserializer<T?> =
             Deserializer { _, bytes ->
                 bytes?.let {
@@ -51,13 +53,25 @@ class JsonSerde<T>(val clazz: Class<T>) : Serde<T> {
 
     override fun serializer(): Serializer<T?> =
             Serializer { _, t ->
-                println(t)
                 t?.let {
                     objectMapper.writeValueAsString(it).toByteArray()
-                }.apply {
-                    println(objectMapper.writeValueAsString(t))
                 }
-
             }
 
 }
+
+@Suppress("UNCHECKED_CAST")
+inline fun <reified K, reified V> ProcessorContext.stateStore(name: String): KeyValueStore<K, V> =
+        getStateStore(name) as KeyValueStore<K, V>
+
+@Suppress("UNCHECKED_CAST")
+inline fun <reified K, reified V> ProcessorContext.windowStore(name: String): WindowStore<K, V> =
+        getStateStore(name) as WindowStore<K, V>
+
+
+inline fun <reified K, reified V> materializedAsKeyValueStore(name: String): Materialized<K, V, KeyValueStore<Bytes, ByteArray>> =
+        Materialized.`as`<K, V, KeyValueStore<Bytes, ByteArray>>(name)
+
+
+inline fun <reified K, reified V> materializedAsWindowStore(name: String): Materialized<K, V, WindowStore<Bytes, ByteArray>> =
+        Materialized.`as`<K, V, WindowStore<Bytes, ByteArray>>(name)

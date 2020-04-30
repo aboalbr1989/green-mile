@@ -1,10 +1,5 @@
 package com.syriatel.d3m.greenmile.transformers
 
-import com.syriatel.d3m.greenmile.*
-import com.syriatel.d3m.greenmile.transformers.processData
-import com.syriatel.d3m.greenmile.transformers.processMon
-import com.syriatel.d3m.greenmile.transformers.processRec
-import com.syriatel.d3m.greenmile.transformers.processSms
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
 import org.junit.jupiter.api.Assertions
@@ -88,7 +83,7 @@ class SmsTransformerTests {
                 0),
                 performedBy = "0933886839",
                 performerCell = "020202020202",
-                type = ActionType.Msg,
+                type = ActionType.SMS,
                 offer = "030303",
                 cost = 13.0,
                 map = mutableMapOf(
