@@ -1,10 +1,15 @@
 package com.syriatel.d3m.greenmile
 
 
+import com.syriatel.d3m.greenmile.config.GreenMileConfig
 import com.syriatel.d3m.greenmile.criteria.offNet
 import com.syriatel.d3m.greenmile.criteria.onNet
 import com.syriatel.d3m.greenmile.domain.Action
 import com.syriatel.d3m.greenmile.domain.ActionType
+import com.syriatel.d3m.greenmile.ml.MLProfile
+import com.syriatel.d3m.greenmile.ml.mlProfiles
+import com.syriatel.d3m.greenmile.profiling.CustomerProfile
+import com.syriatel.d3m.greenmile.profiling.customerProfiles
 import com.syriatel.d3m.greenmile.statistics.Dimension
 import com.syriatel.d3m.greenmile.statistics.dimensions
 import com.syriatel.d3m.greenmile.statistics.rollup
@@ -19,7 +24,6 @@ import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.TimeWindows
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
@@ -35,15 +39,30 @@ fun main(args: Array<String>) {
     runApplication<GreenMile>(*args)
 }
 
+class Customer360(
+        val profile: CustomerProfile? = null,
+        val ml: MLProfile? = null
+)
+
 
 @Configuration
-@EnableConfigurationProperties(KafkaProperties::class)
+
+@EnableConfigurationProperties(GreenMileConfig::class)
 class StreamsApp {
 
     @Bean(name = ["greenMileTopology"])
     fun topology(
             metrics: List<Dimension>
     ) = StreamsBuilder().apply {
+
+        val tabs = customerProfiles()
+        val ml = mlProfiles()
+
+        tabs.outerJoin(
+                ml
+        ) { v1, v2 ->
+            Customer360(v1, v2)
+        }
 
         val actions = actions()
         val hourly = actions.groupByKey().windowedBy(
@@ -56,9 +75,9 @@ class StreamsApp {
     }
 
     @Bean
-    fun kafkaStreams(streamsBuilder: StreamsBuilder, properties: KafkaProperties) =
+    fun kafkaStreams(streamsBuilder: StreamsBuilder, properties: GreenMileConfig) =
             KafkaStreams(streamsBuilder.build(), Properties().apply {
-                putAll(properties.buildStreamsProperties())
+                putAll(properties.buildProperties())
             }).apply {
                 start()
             }

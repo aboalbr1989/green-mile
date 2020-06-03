@@ -36,7 +36,7 @@ val Action.dataSession: Boolean
 
 
 fun Action.timeBetween(from: LocalTime, to: LocalTime): Boolean {
-    return if(timeStamp.toLocalTime().equals(from) || timeStamp.toLocalTime().equals(to))
+    return if (timeStamp.toLocalTime() == from || timeStamp.toLocalTime() == to)
         true
     else if (from.isBefore(to))
         timeStamp.toLocalTime().let {

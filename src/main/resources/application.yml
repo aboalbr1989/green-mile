@@ -1,25 +1,17 @@
 spring:
   application:
     name: green-mile
-  kafka:
-    streams:
-      application-id: green-mile
-      bootstrap-servers: localhost:9092
-      state-dir: ./target
-      properties:
-        default:
-          key:
-            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-          value:
-            serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-        commit:
-          interval:
-            ms: 1000
-    producer:
-      client-id: green-mile-producer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-    consumer:
-      client-id: green-mile-consumer
-      value-deserializer: org.apache.kafka.common.serialization.LongDeserializer
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+green-mile:
+  config:
+    application-id: green-mile
+    bootstrap-servers: broker:9092
+    state-dir: ./target
+    properties:
+      default:
+        key:
+          serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+        value:
+          serde: org.apache.kafka.common.serialization.Serdes$StringSerde
+      commit:
+        interval:
+          ms: 1000

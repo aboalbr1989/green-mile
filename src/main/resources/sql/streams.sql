@@ -1,0 +1,15 @@
+
+
+CREATE STREAM calls (
+
+) with (VALUE_FORMAT = "DELIMITED");
+
+
+CREATE STREAM sms (
+
+) with (VALUE_FORMAT = "DELIMITED");
+
+CREATE STREAM data (
+
+) with (VALUE_FORMAT = "DELIMITED");
+
